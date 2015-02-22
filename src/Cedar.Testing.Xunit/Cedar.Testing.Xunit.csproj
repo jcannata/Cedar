@@ -57,7 +57,7 @@
       <Name>Cedar.Testing</Name>
     </ProjectReference>
     <ProjectReference Include="..\Cedar\Cedar.csproj">
-      <Project>{dcfcd369-4580-42d4-8f26-a071b9d17680}</Project>
+      <Project>{1579a2b2-2da9-439b-a026-0e14cee7ebd3}</Project>
       <Name>Cedar</Name>
     </ProjectReference>
   </ItemGroup>

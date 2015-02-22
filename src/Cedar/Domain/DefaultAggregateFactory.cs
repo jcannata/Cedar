@@ -1,6 +1,7 @@
 namespace Cedar.Domain
 {
     using System;
+    using System.Linq;
     using System.Reflection;
     using Cedar.Domain.Persistence;
 
@@ -11,8 +12,18 @@ namespace Cedar.Domain
     {
         public IAggregate Build(Type type, string id)
         {
-            ConstructorInfo constructor = type.GetConstructor(
-                BindingFlags.NonPublic | BindingFlags.Instance, null, new[] {typeof (string) }, null);
+            var constructor = type
+                .GetTypeInfo()
+                .DeclaredConstructors
+                .Single(c =>
+            {
+                if(c.IsStatic || c.IsPublic)
+                {
+                    return false;
+                }
+                var parameterInfos = c.GetParameters();
+                return parameterInfos.Length == 1 && parameterInfos[0].ParameterType == typeof(string);
+            });
 
             return constructor.Invoke(new object[] {id}) as IAggregate;
         }

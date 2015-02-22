@@ -7,7 +7,7 @@
     using Cedar.Annotations;
     using Cedar.GetEventStore.Serialization;
     using Cedar.Handlers;
-    using CuttingEdge.Conditions;
+    using EnsureThat;
     using EventStore.ClientAPI;
 
     public static class HandlerModuleExtensions
@@ -27,8 +27,8 @@
             bool isSubscribedToAll,
             CancellationToken cancellationToken)
         {
-            Condition.Requires(handlerResolver, "handlerResolver").IsNotNull();
-            Condition.Requires(serializer, "serializer").IsNotNull();
+            Ensure.That(handlerResolver, "handlerResolver").IsNotNull();
+            Ensure.That(serializer, "serializer").IsNotNull();
 
             IDictionary<string, object> headers;
             var @event = serializer.DeserializeEventData(resolvedEvent, out headers);

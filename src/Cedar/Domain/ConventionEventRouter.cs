@@ -35,20 +35,18 @@ namespace Cedar.Domain
 
             _registered = aggregate;
 
-            // Get instance methods named Apply with one parameter returning void
-            var applyMethods =
-                aggregate.GetType()
-                    .GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
-                    .Where(
-                        m =>
-                            m.Name == "Apply" && m.GetParameters().Length == 1 &&
-                            m.ReturnParameter.ParameterType == typeof (void))
-                    .Select(m => new {Method = m, MessageType = m.GetParameters().Single().ParameterType});
+            var applyMethods = aggregate.GetType()
+                .GetRuntimeMethods()
+                .Where(m => !m.IsStatic
+                    && m.Name == "Apply"
+                    && m.GetParameters().Length == 1
+                    && m.ReturnType == typeof(void))
+                .Select(m => new { Method = m, MessageType = m.GetParameters().Single().ParameterType });
 
             foreach (var apply in applyMethods)
             {
                 MethodInfo applyMethod = apply.Method;
-                _handlers.Add(apply.MessageType, m => applyMethod.Invoke(aggregate, new[] {m}));
+                _handlers.Add(apply.MessageType, m => applyMethod.Invoke(aggregate, new[] { m }));
             }
         }
 

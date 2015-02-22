@@ -3,7 +3,7 @@ namespace Cedar.Domain
     using System;
     using System.Collections;
     using System.Collections.Generic;
-    using CuttingEdge.Conditions;
+    using EnsureThat;
 
     public abstract class AggregateBase : IAggregate, IEquatable<IAggregate>
     {
@@ -18,8 +18,8 @@ namespace Cedar.Domain
 
         protected AggregateBase(string id, IEventRouter eventRouter)
         {
-            Condition.Requires(id, "id").IsNotNullOrWhiteSpace();
-            Condition.Requires(eventRouter, "eventRouter").IsNotNull();
+            Ensure.That(id, "id").IsNotNullOrWhiteSpace();
+            Ensure.That(eventRouter, "eventRouter").IsNotNull();
 
             _id = id;
             _registeredRoutes = eventRouter;

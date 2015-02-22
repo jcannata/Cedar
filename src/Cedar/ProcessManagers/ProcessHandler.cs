@@ -13,7 +13,7 @@ namespace Cedar.ProcessManagers
     using Cedar.Handlers;
     using Cedar.ProcessManagers.Messages;
     using Cedar.ProcessManagers.Persistence;
-    using CuttingEdge.Conditions;
+    using EnsureThat;
 
     public static class ProcessHandler
     {
@@ -49,8 +49,8 @@ namespace Cedar.ProcessManagers
             IProcessManagerFactory processManagerFactory = null,
             BuildProcessManagerId buildProcessId = null)
         {
-            Condition.Requires(dispatchCommand, "dispatchCommand").IsNotNull();
-            Condition.Requires(checkpointRepository, "checkpointRepository").IsNotNull();
+            Ensure.That(dispatchCommand, "dispatchCommand").IsNotNull();
+            Ensure.That(checkpointRepository, "checkpointRepository").IsNotNull();
 
             _pipes = new List<Pipe<object>>();
             _dispatcher = new ProcessManagerDispatcher(dispatchCommand, checkpointRepository, processManagerFactory, buildProcessId);
@@ -81,7 +81,8 @@ namespace Cedar.ProcessManagers
         private HandlerModule HandleMessageType(HandlerModule module, Type messageType)
         {
             return (HandlerModule)GetType()
-                .GetMethod("BuildHandler", BindingFlags.NonPublic | BindingFlags.Instance)
+                .GetRuntimeMethods()
+                .Single(m => m.Name == "BuildHandler" && m.IsPrivate && !m.IsStatic)
                 .MakeGenericMethod(messageType)
                 .Invoke(this, new object[] { module });
         }
@@ -90,7 +91,7 @@ namespace Cedar.ProcessManagers
         private HandlerModule BuildHandler<TMessage>(HandlerModule module)
             where TMessage : class
         {
-            _pipes.Select(pipe => Delegate.CreateDelegate(typeof(Pipe<TMessage>), pipe.Method) as Pipe<TMessage>)
+            _pipes.Select(pipe => pipe.GetMethodInfo().CreateDelegate(typeof(Pipe<TMessage>)) as Pipe<TMessage>)
                 .Aggregate(module.For<TMessage>(), (builder, pipe) => builder.Pipe(pipe))
                 .Handle(_dispatcher.Dispatch);
 
@@ -139,7 +140,7 @@ namespace Cedar.ProcessManagers
 
             public IEnumerable<Handler<TMessage>> ResolveAll<TMessage>() where TMessage : class
             {
-                if(false == typeof(EventMessage).IsAssignableFrom(typeof(TMessage))
+                if(false == typeof(EventMessage).GetTypeInfo().IsAssignableFrom(typeof(TMessage).GetTypeInfo())
                    || false == _byCorrelationId.ContainsKey(typeof(TMessage)))
                 {
                     yield break;
