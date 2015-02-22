@@ -40,7 +40,7 @@ task ILMerge -depends Compile {
 
     $dllDir = "$srcDir\Cedar\bin\Release"
     $inputDlls = "$dllDir\Cedar.dll"
-    @(	"EnsureThat"",
+    @(	"EnsureThat",
         "System.Reactive.Core",
         "System.Reactive.Interfaces",
         "System.Reactive.Linq",
