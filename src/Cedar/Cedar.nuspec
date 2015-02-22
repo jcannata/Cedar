@@ -16,8 +16,8 @@
         <dependencies/>
     </metadata>
     <files>
-        <file src="..\..\build\merged\Cedar.dll" target="lib\net45" />
-        <file src="..\..\build\merged\Cedar.pdb" target="lib\net45" />
-        <file src="bin\Release\Cedar.xml" target="lib\net45" />
+        <file src="..\..\build\merged\Cedar.dll" target="lib\Portable-Net45+Win8+WP8+WPA81" />
+        <file src="..\..\build\merged\Cedar.pdb" target="lib\Portable-Net45+Win8+WP8+WPA81" />
+        <file src="bin\Release\Cedar.xml" target="lib\Portable-Net45+Win8+WP8+WPA81" />
     </files>
 </package>
