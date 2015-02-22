@@ -2,8 +2,6 @@ namespace Cedar.Domain
 {
     using System;
     using System.Collections.Generic;
-    using System.Linq;
-    using System.Reflection;
 
     public class ConventionEventRouter : IEventRouter
     {
@@ -35,8 +33,10 @@ namespace Cedar.Domain
 
             _registered = aggregate;
 
+            throw new NotImplementedException();
+
             // Get instance methods named Apply with one parameter returning void
-            var applyMethods =
+            /*var applyMethods =
                 aggregate.GetType()
                     .GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
                     .Where(
@@ -49,7 +49,7 @@ namespace Cedar.Domain
             {
                 MethodInfo applyMethod = apply.Method;
                 _handlers.Add(apply.MessageType, m => applyMethod.Invoke(aggregate, new[] {m}));
-            }
+            }*/
         }
 
         public virtual void Dispatch(object eventMessage)

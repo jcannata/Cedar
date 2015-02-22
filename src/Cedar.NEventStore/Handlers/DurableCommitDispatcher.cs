@@ -17,7 +17,7 @@
     /// </summary>
     public sealed class DurableCommitDispatcher : IDisposable
     {
-        private static readonly ILog Logger = LogProvider.GetCurrentClassLogger();
+        private static readonly ILog Logger = LogProvider.For<DurableCommitDispatcher>();
         private readonly IEventStoreClient _eventStoreClient;
         private readonly ICheckpointRepository _checkpointRepository;
         private readonly Func<ICommit, CancellationToken, Task> _dispatchCommit;

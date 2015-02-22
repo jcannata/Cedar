@@ -4,7 +4,7 @@ namespace Cedar.Handlers
     using System.Threading;
     using System.Threading.Tasks;
     using Cedar.Annotations;
-    using CuttingEdge.Conditions;
+    using EnsureThat;
 
     /// <summary>
     ///     A set of extensions around <see cref="IHandlerResolver" />
@@ -26,8 +26,8 @@ namespace Cedar.Handlers
             CancellationToken cancellationToken)
             where TMessage : class
         {
-            Condition.Requires(handlerResolver, "handlerResolver").IsNotNull();
-            Condition.Requires(message, "message").IsNotNull();
+            Ensure.That(handlerResolver, "handlerResolver").IsNotNull();
+            Ensure.That(message, "message").IsNotNull();
 
             IEnumerable<Handler<TMessage>> handlers = handlerResolver.ResolveAll<TMessage>();
             foreach (var handler in handlers)

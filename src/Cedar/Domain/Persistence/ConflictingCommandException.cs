@@ -5,7 +5,6 @@ namespace Cedar.Domain.Persistence
     /// <summary>
     ///     Represents a command that could not be executed because it conflicted with the command of another user or actor.
     /// </summary>
-    [Serializable]
     public class ConflictingCommandException : Exception
     {
         /// <summary>

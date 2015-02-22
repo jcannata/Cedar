@@ -61,7 +61,7 @@
       <Name>Cedar.NEventStore</Name>
     </ProjectReference>
     <ProjectReference Include="..\Cedar\Cedar.csproj">
-      <Project>{DCFCD369-4580-42D4-8F26-A071B9D17680}</Project>
+      <Project>{1579a2b2-2da9-439b-a026-0e14cee7ebd3}</Project>
       <Name>Cedar</Name>
     </ProjectReference>
   </ItemGroup>
