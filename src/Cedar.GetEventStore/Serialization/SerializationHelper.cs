@@ -5,7 +5,7 @@
     using System.Linq;
     using System.Text;
     using Cedar.Handlers;
-    using CuttingEdge.Conditions;
+    using EnsureThat;
     using EventStore.ClientAPI;
 
     public static class SerializationHelper
@@ -27,8 +27,8 @@
             Action<IDictionary<string, object>> updateHeaders = null, 
             Func<Type, string> getClrType = null)
         {
-            Condition.Requires(serializer, "serializer").IsNotNull();
-            Condition.Requires(@event, "@event").IsNotNull();
+            Ensure.That(serializer, "serializer").IsNotNull();
+            Ensure.That(@event, "@event").IsNotNull();
 
             getClrType = getClrType ?? TypeUtilities.ToPartiallyQualifiedName;
             updateHeaders = updateHeaders ?? (_ => { });
