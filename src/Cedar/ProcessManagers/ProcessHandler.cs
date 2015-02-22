@@ -6,6 +6,7 @@ namespace Cedar.ProcessManagers
     using System.Collections.Generic;
     using System.Linq;
     using System.Reactive.Linq;
+    using System.Reflection;
     using System.Threading;
     using System.Threading.Tasks;
     using Cedar.Annotations;
@@ -79,23 +80,22 @@ namespace Cedar.ProcessManagers
 
         private HandlerModule HandleMessageType(HandlerModule module, Type messageType)
         {
-            throw new NotImplementedException();
-            /*return (HandlerModule)GetType()
-                .GetMethod("BuildHandler", BindingFlags.NonPublic | BindingFlags.Instance)
+            return (HandlerModule)GetType()
+                .GetRuntimeMethods()
+                .Single(m => m.Name == "BuildHandler" && m.IsPrivate && !m.IsStatic)
                 .MakeGenericMethod(messageType)
-                .Invoke(this, new object[] { module });*/
+                .Invoke(this, new object[] { module });
         }
 
         [UsedImplicitly]
         private HandlerModule BuildHandler<TMessage>(HandlerModule module)
             where TMessage : class
         {
-            throw new NotImplementedException();
-           /* _pipes.Select(pipe => Delegate.CreateDelegate(typeof(Pipe<TMessage>), pipe.Method) as Pipe<TMessage>)
+            _pipes.Select(pipe => pipe.GetMethodInfo().CreateDelegate(typeof(Pipe<TMessage>)) as Pipe<TMessage>)
                 .Aggregate(module.For<TMessage>(), (builder, pipe) => builder.Pipe(pipe))
                 .Handle(_dispatcher.Dispatch);
 
-            return module;*/
+            return module;
         }
 
         public IEnumerable<Handler<TMessage>> ResolveAll<TMessage>() where TMessage : class
@@ -140,8 +140,7 @@ namespace Cedar.ProcessManagers
 
             public IEnumerable<Handler<TMessage>> ResolveAll<TMessage>() where TMessage : class
             {
-                throw new NotImplementedException();
-               /* if(false == typeof(EventMessage).IsAssignableFrom(typeof(TMessage))
+                if(false == typeof(EventMessage).GetTypeInfo().IsAssignableFrom(typeof(TMessage).GetTypeInfo())
                    || false == _byCorrelationId.ContainsKey(typeof(TMessage)))
                 {
                     yield break;
@@ -180,7 +179,7 @@ namespace Cedar.ProcessManagers
                     await Task.WhenAll(commands.Select(command => _dispatchCommand(command, ct)));
 
                     await _checkpointRepository.SaveCheckpointToken(process, domainEventMessage.CheckpointToken, ct);
-                };*/
+                };
             }
 
             private async Task<CheckpointedProcess> GetProcess(string correlationId, CancellationToken ct)
