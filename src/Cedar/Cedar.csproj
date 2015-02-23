@@ -43,6 +43,10 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>ExceptionMessages.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <EmbeddedResource Include="Projections\Messages.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Messages.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Packages\LibLog.3.1\LibLog.cs" />
@@ -64,6 +68,7 @@
     <Compile Include="Domain\Persistence\IAggregateFactory.cs" />
     <Compile Include="Domain\Persistence\PersistenceException.cs" />
     <Compile Include="Domain\RegistrationEventRouter.cs" />
+    <Compile Include="Projections\ProjectionDispatcher.cs" />
     <Compile Include="Handlers\EventMessage.cs" />
     <Compile Include="Handlers\EventMessageHeaders.cs" />
     <Compile Include="Handlers\HandlerBuilderExtensions.cs" />
@@ -75,12 +80,18 @@
     <Compile Include="Handlers\IHandlerBuilder.cs" />
     <Compile Include="Handlers\IHandlerResolver.cs" />
     <Compile Include="Handlers\InMemoryCheckpointRepository.cs" />
+    <Compile Include="Projections\Messages.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Messages.resx</DependentUpon>
+    </Compile>
     <Compile Include="Internal\EnumerableExtensions.cs" />
     <Compile Include="Internal\InterlockedBoolean.cs" />
     <Compile Include="Internal\InterlockedBooleanExtensions.cs" />
     <Compile Include="Internal\StringExtensions.cs" />
     <Compile Include="Internal\TaskExtensions.cs" />
     <Compile Include="ProcessManagers\DispatchCommand.cs" />
+    <Compile Include="ProcessManagers\EventMessage.cs" />
     <Compile Include="ProcessManagers\IProcessManager.cs" />
     <Compile Include="ProcessManagers\IProcessManagerCheckpointRepository.cs" />
     <Compile Include="ProcessManagers\Messages\CheckpointReached.cs" />

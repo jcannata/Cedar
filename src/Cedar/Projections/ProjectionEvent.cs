@@ -8,22 +8,22 @@
     {
         private readonly string _streamId;
         private readonly Guid _eventId;
-        private readonly int _sequence;
+        private readonly int _version;
         private readonly DateTimeOffset _timeStamp;
-        private readonly IDictionary<string, object> _headers;
+        private readonly IReadOnlyDictionary<string, object> _headers;
         private readonly T _event;
 
         public ProjectionEvent(
             string streamId,
             Guid eventId,
-            int sequence,
+            int version,
             DateTimeOffset timeStamp,
-            IDictionary<string, object> headers,
+            IReadOnlyDictionary<string, object> headers,
             T @event)
         {
             _streamId = streamId;
             _eventId = eventId;
-            _sequence = sequence;
+            _version = version;
             _timeStamp = timeStamp;
             _headers = headers;
             _event = @event;
@@ -39,9 +39,9 @@
             get { return _eventId; }
         }
 
-        public int Sequence
+        public int Version
         {
-            get { return _sequence; }
+            get { return _version; }
         }
 
         public DateTimeOffset TimeStamp
@@ -49,7 +49,7 @@
             get { return _timeStamp; }
         }
 
-        public IDictionary<string, object> Headers
+        public IReadOnlyDictionary<string, object> Headers
         {
             get { return _headers; }
         }
