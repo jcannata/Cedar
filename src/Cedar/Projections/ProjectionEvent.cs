@@ -9,7 +9,7 @@
         private readonly string _streamId;
         private readonly Guid _eventId;
         private readonly int _sequence;
-        private readonly DateTimeOffset _timeStampe;
+        private readonly DateTimeOffset _timeStamp;
         private readonly IDictionary<string, object> _headers;
         private readonly T _event;
 
@@ -17,14 +17,14 @@
             string streamId,
             Guid eventId,
             int sequence,
-            DateTimeOffset timeStampe,
+            DateTimeOffset timeStamp,
             IDictionary<string, object> headers,
             T @event)
         {
             _streamId = streamId;
             _eventId = eventId;
             _sequence = sequence;
-            _timeStampe = timeStampe;
+            _timeStamp = timeStamp;
             _headers = headers;
             _event = @event;
         }
@@ -44,9 +44,9 @@
             get { return _sequence; }
         }
 
-        public DateTimeOffset TimeStampe
+        public DateTimeOffset TimeStamp
         {
-            get { return _timeStampe; }
+            get { return _timeStamp; }
         }
 
         public IDictionary<string, object> Headers
