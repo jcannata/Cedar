@@ -3,72 +3,69 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading;
     using System.Threading.Tasks;
     using Cedar.Domain;
     using Cedar.Domain.Persistence;
     using Cedar.GetEventStore.Serialization;
     using Cedar.Handlers;
+    using Cedar.Internal;
     using EventStore.ClientAPI;
 
-    public class EventStoreClientRepository<T>
-        where T : class, IAggregate
+    public class GetEventStoreAggregateRepository : IAggregateRepository
     {
         private const int PageSize = 512;
         private readonly IEventStoreConnection _connection;
         private readonly ISerializer _serializer;
         private readonly IAggregateFactory _aggregateFactory;
 
-        public EventStoreClientRepository(IEventStoreConnection connection, ISerializer serializer, IAggregateFactory aggregateFactory = null)
+        public GetEventStoreAggregateRepository(
+            IEventStoreConnection connection,
+            ISerializer serializer,
+            IAggregateFactory aggregateFactory = null)
         {
             _connection = connection;
             _serializer = serializer;
             _aggregateFactory = aggregateFactory ?? new DefaultAggregateFactory();
         }
 
-        public async Task<T> GetById(string streamId, int maxVersion = Int32.MaxValue, string bucketId = null)
+        public async Task<TAggregate> GetById<TAggregate>(
+            string bucketId,
+            string id,
+            int version,
+            CancellationToken _)
+            where TAggregate : class, IAggregate
         {
-            var streamName = streamId.FormatStreamNameWithBucket(bucketId);
-
-            var slice = await _connection.ReadStreamEventsForwardAsync(streamName, StreamPosition.Start, PageSize, false);
-            
+            var streamName = id.FormatStreamNameWithBucket(bucketId);
+            var slice = await _connection.ReadStreamEventsForwardAsync(streamName, StreamPosition.Start, PageSize, false).NotOnCapturedContext();
             if (slice.Status == SliceReadStatus.StreamDeleted || slice.Status == SliceReadStatus.StreamNotFound)
             {
                 return null;
             }
-            
-            var aggregate = _aggregateFactory.Build(typeof(T), streamId);
 
-            ApplySlice(maxVersion, slice, aggregate);
+            var aggregate = _aggregateFactory.Build(typeof(TAggregate), id);
+            ApplySlice(version, slice, aggregate);
 
             while (false == slice.IsEndOfStream)
             {
-                slice = await _connection.ReadStreamEventsForwardAsync(streamName, slice.NextEventNumber, PageSize, false);
-
-                ApplySlice(maxVersion, slice, aggregate);
+                slice = await _connection.ReadStreamEventsForwardAsync(streamName, slice.NextEventNumber, PageSize, false).NotOnCapturedContext();
+                ApplySlice(version, slice, aggregate);
             }
 
-            return (T)aggregate;
+            return (TAggregate)aggregate;
         }
 
-        private void ApplySlice(int maxVersion, StreamEventsSlice slice, IAggregate aggregate)
-        {
-            int version = aggregate.Version;
-            var eventsToApply = from @event in slice.Events
-                where ++version <= maxVersion
-                select _serializer.DeserializeEventData(@event);
-         
-            eventsToApply.ForEach(aggregate.ApplyEvent);
-
-            aggregate.ClearUncommittedEvents();
-        }
-
-        public async Task Save(T aggregate, Guid commitId, Action<IDictionary<string, object>> updateHeaders = null, string bucketId = null)
+        public async Task Save(
+            IAggregate aggregate,
+            string bucketId,
+            Guid commitId,
+            Action<IDictionary<string, object>> updateHeaders,
+            CancellationToken cancellationToken)
         {
             var changes = aggregate.GetUncommittedEvents().OfType<object>().ToList();
-
             var expectedVersion = aggregate.Version - changes.Count;
 
-            if(false == changes.Any())
+            if(!changes.Any())
             {
                 throw new ArgumentOutOfRangeException("aggregate.GetUncommittedEvents", "No changes found.");
             }
@@ -78,9 +75,7 @@
             }
 
             int currentEventVersion = expectedVersion;
-
             var streamName = aggregate.Id.FormatStreamNameWithBucket(bucketId);
-
             updateHeaders = updateHeaders ?? (_ => { });
 
             var eventData = changes.Select(@event => _serializer.SerializeEventData(
@@ -94,12 +89,25 @@
                     headers[EventMessageHeaders.CommitId] = commitId;
                 }));
 
-            var result = await _connection.AppendToStreamAsync(streamName, expectedVersion - 1, eventData);
+            // TODO DH expected version here should be specified ?
+            var result = await _connection.AppendToStreamAsync(streamName, expectedVersion - 1, eventData).NotOnCapturedContext();
 
             if(result.LogPosition == Position.End)
             {
-                throw new Exception();
+                throw new Exception(); //TODO what is this? what are meant to do here / with this?
             }
+        }
+
+        private void ApplySlice(int maxVersion, StreamEventsSlice slice, IAggregate aggregate)
+        {
+            int version = aggregate.Version;
+            var eventsToApply = from @event in slice.Events
+                where ++version <= maxVersion
+                select _serializer.DeserializeEventData(@event);
+         
+            eventsToApply.ForEach(aggregate.ApplyEvent);
+
+            aggregate.ClearUncommittedEvents();
         }
     }
 }

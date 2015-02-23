@@ -25,6 +25,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>bin\Debug\Cedar.xml</DocumentationFile>
+    <NoWarn>1519</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -34,12 +35,17 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>bin\Release\Cedar.xml</DocumentationFile>
+    <NoWarn>1519</NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <!-- A reference to the entire .NET Framework is automatically included -->
     <EmbeddedResource Include="Domain\Persistence\ExceptionMessages.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>ExceptionMessages.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Projections\Messages.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Messages.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
@@ -60,8 +66,11 @@
       <DependentUpon>ExceptionMessages.resx</DependentUpon>
     </Compile>
     <Compile Include="Domain\Persistence\IAggregateFactory.cs" />
+    <Compile Include="Domain\Persistence\IAggregateRepository.cs" />
     <Compile Include="Domain\Persistence\PersistenceException.cs" />
+    <Compile Include="Domain\Persistence\AggregateRepositoryExtensions.cs" />
     <Compile Include="Domain\RegistrationEventRouter.cs" />
+    <Compile Include="Projections\ProjectionDispatcher.cs" />
     <Compile Include="Handlers\EventMessage.cs" />
     <Compile Include="Handlers\EventMessageHeaders.cs" />
     <Compile Include="Handlers\HandlerBuilderExtensions.cs" />
@@ -73,6 +82,11 @@
     <Compile Include="Handlers\IHandlerBuilder.cs" />
     <Compile Include="Handlers\IHandlerResolver.cs" />
     <Compile Include="Handlers\InMemoryCheckpointRepository.cs" />
+    <Compile Include="Projections\Messages.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Messages.resx</DependentUpon>
+    </Compile>
     <Compile Include="Internal\EnumerableExtensions.cs" />
     <Compile Include="Internal\InterlockedBoolean.cs" />
     <Compile Include="Internal\InterlockedBooleanExtensions.cs" />
@@ -87,6 +101,13 @@
     <Compile Include="ProcessManagers\Persistence\DefaultProcessManagerFactory.cs" />
     <Compile Include="ProcessManagers\Persistence\IProcessManagerFactory.cs" />
     <Compile Include="ProcessManagers\ProcessHandler.cs" />
+    <Compile Include="Projections\ProjectionEvent.cs" />
+    <Compile Include="Projections\ProjectionHandlerBuilderExtensions.cs" />
+    <Compile Include="Projections\ProjectionHandlerResolver.cs" />
+    <Compile Include="Projections\IProjectionHandlerResolver.cs" />
+    <Compile Include="Projections\ProjectionHandlerModule.cs" />
+    <Compile Include="Projections\ProjectionHandlerRegistration.cs" />
+    <Compile Include="Projections\IProjectionHandlerBuilder.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -111,6 +132,7 @@
       <HintPath>..\packages\Rx-PlatformServices.2.2.5\lib\portable-net45+winrt45+wp8+wpa81\System.Reactive.PlatformServices.dll</HintPath>
     </Reference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.

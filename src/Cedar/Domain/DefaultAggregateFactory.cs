@@ -6,7 +6,7 @@ namespace Cedar.Domain
     using Cedar.Domain.Persistence;
 
     /// <summary>
-    /// Can construct aggregates that have a public constructor that take the aggregate Id as a string.
+    /// Can construct aggregates that have a public or protected constructor that takes the aggregate Id as a string.
     /// </summary>
     public class DefaultAggregateFactory : IAggregateFactory
     {
@@ -17,7 +17,7 @@ namespace Cedar.Domain
                 .DeclaredConstructors
                 .Single(c =>
             {
-                if(c.IsStatic || c.IsPublic)
+                if(c.IsStatic)
                 {
                     return false;
                 }

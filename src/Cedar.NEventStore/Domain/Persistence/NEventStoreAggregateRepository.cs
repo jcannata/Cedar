@@ -11,28 +11,32 @@ namespace Cedar.NEventStore.Domain.Persistence
     using global::NEventStore;
     using global::NEventStore.Persistence;
 
-    public class NEventStoreRepository : IRepository
+    public class NEventStoreAggregateRepository : IAggregateRepository
     {
         private const string AggregateTypeHeader = "AggregateType";
         private readonly IAggregateFactory _aggregateFactory;
         private readonly IStoreEvents _eventStore;
         private readonly ConcurrentDictionary<Tuple<string, string>, int> _streamHeads;
 
-        public NEventStoreRepository(IStoreEvents eventStore)
-            : this(eventStore, (IAggregateFactory) new DefaultAggregateFactory())
+        public NEventStoreAggregateRepository(IStoreEvents eventStore)
+            : this(eventStore, new DefaultAggregateFactory())
         {}
 
-        public NEventStoreRepository(IStoreEvents eventStore, IAggregateFactory aggregateFactory)
+        public NEventStoreAggregateRepository(IStoreEvents eventStore, IAggregateFactory aggregateFactory)
         {
             _eventStore = eventStore;
             _aggregateFactory = aggregateFactory;
             _streamHeads = new ConcurrentDictionary<Tuple<string, string>, int>();
         }
 
-        public Task<TAggregate> GetById<TAggregate>(string bucketId, string id, int versionToLoad, CancellationToken cancellationToken)
+        public Task<TAggregate> GetById<TAggregate>(string bucketId, string id, int version, CancellationToken cancellationToken)
             where TAggregate : class, IAggregate
         {
-            var commits = _eventStore.Advanced.GetFrom(bucketId, id, 0, versionToLoad).ToList();
+            var commits = _eventStore.Advanced.GetFrom(bucketId, id, 0, version).ToList();
+            if(commits.Count == 0)
+            {
+                return Task.FromResult(default(TAggregate));
+            }
             IAggregate aggregate = GetAggregate<TAggregate>(id);
             var streamHead = ApplyEventsToAggregate(commits, aggregate);
             _streamHeads.AddOrUpdate(Tuple.Create(bucketId, id), streamHead, (key, _) => streamHead);
@@ -41,8 +45,8 @@ namespace Cedar.NEventStore.Domain.Persistence
         }
 
         public Task Save(
-            string bucketId,
             IAggregate aggregate,
+            string bucketId,
             Guid commitId,
             Action<IDictionary<string, object>> updateHeaders,
             CancellationToken cancellationToken)
@@ -51,8 +55,8 @@ namespace Cedar.NEventStore.Domain.Persistence
             while (true)
             {
                 int streamHead;
-                
-                if(false == _streamHeads.TryGetValue(Tuple.Create(bucketId, aggregate.Id), out streamHead))
+
+                if (false == _streamHeads.TryGetValue(Tuple.Create(bucketId, aggregate.Id), out streamHead))
                 {
                     streamHead = 1;
                 }

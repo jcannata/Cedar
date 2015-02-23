@@ -111,11 +111,12 @@
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Handlers\HandlerResolverTests.cs" />
+    <Compile Include="Projections\ProjectionTests.cs" />
     <Compile Include="TestLogger.cs" />
     <Compile Include="DefaultGetEventStoreJsonSerializer.cs" />
     <Compile Include="Domain\AggregateTests.cs" />
-    <Compile Include="Domain\GetEventStoreClientRepositoryTests.cs" />
-    <Compile Include="Domain\NEventStoreRepositoryTests.cs" />
+    <Compile Include="Domain\Persistences\GetEventStoreAggregateRepositoryTests.cs" />
+    <Compile Include="Domain\Persistences\NEventStoreAggregateRepositoryTests.cs" />
     <Compile Include="ProcessManagers\ProcessManagerHandlerTests.cs" />
     <Compile Include="Handlers\ResolvedEventDispatcherTests.cs" />
     <Compile Include="MessageEqualityComparerTests.cs" />
