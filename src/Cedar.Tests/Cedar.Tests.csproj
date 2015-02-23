@@ -111,6 +111,7 @@
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Handlers\HandlerResolverTests.cs" />
+    <Compile Include="Projections\ProjectionTests.cs" />
     <Compile Include="TestLogger.cs" />
     <Compile Include="DefaultGetEventStoreJsonSerializer.cs" />
     <Compile Include="Domain\AggregateTests.cs" />
