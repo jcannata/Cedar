@@ -69,7 +69,7 @@
     </Compile>
     <Compile Include="EnumerableExtensions.cs" />
     <Compile Include="DeterministicGuidGenerator.cs" />
-    <Compile Include="Domain\Persistence\EventStoreClientRepository.cs" />
+    <Compile Include="Domain\Persistence\GetEventStoreAggregateRepository.cs" />
     <Compile Include="Handlers\EventStoreExtensions.cs" />
     <Compile Include="Handlers\HandlerModuleExtensions.cs" />
     <Compile Include="Handlers\GetEventStoreMessage.cs" />

@@ -6,7 +6,7 @@
     public class AggregateTests
     {
         [Fact]
-        public void should_not_require_an_explicit_handler()
+        public void Should_not_require_an_explicit_handler()
         {
             var aggregate = new Aggregate("id");
 

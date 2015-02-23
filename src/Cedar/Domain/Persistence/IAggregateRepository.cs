@@ -1,4 +1,4 @@
-namespace Cedar.NEventStore.Domain.Persistence
+namespace Cedar.Domain.Persistence
 {
     using System;
     using System.Collections.Generic;
@@ -6,14 +6,18 @@ namespace Cedar.NEventStore.Domain.Persistence
     using System.Threading.Tasks;
     using Cedar.Domain;
 
-    public interface IRepository
+    public interface IAggregateRepository
     {
-        Task<TAggregate> GetById<TAggregate>(string bucketId, string id, int version, CancellationToken cancellationToken)
+        Task<TAggregate> GetById<TAggregate>(
+            string bucketId,
+            string id,
+            int version,
+            CancellationToken cancellationToken)
             where TAggregate : class, IAggregate;
 
         Task Save(
-            string bucketId,
             IAggregate aggregate,
+            string bucketId,
             Guid commitId,
             Action<IDictionary<string, object>> updateHeaders,
             CancellationToken cancellationToken);
