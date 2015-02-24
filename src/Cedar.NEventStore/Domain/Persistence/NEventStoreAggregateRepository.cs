@@ -1,4 +1,4 @@
-namespace Cedar.NEventStore.Domain.Persistence
+namespace Cedar.Domain.Persistence
 {
     using System;
     using System.Collections.Concurrent;
@@ -7,7 +7,6 @@ namespace Cedar.NEventStore.Domain.Persistence
     using System.Threading;
     using System.Threading.Tasks;
     using Cedar.Domain;
-    using Cedar.Domain.Persistence;
     using global::NEventStore;
     using global::NEventStore.Persistence;
 

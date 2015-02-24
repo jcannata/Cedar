@@ -51,7 +51,7 @@
             using(var dispatcher = new TestProjectionDispatcher(handlerResolver, new TestCheckpointRepository()))
             {
                 await dispatcher.Start();
-                await dispatcher.Dispatch(streamId, eventId, version, timeStamp, "checkpoint", headers, new SampleEvent());
+                await dispatcher.DoDispatch(streamId, eventId, version, timeStamp, "checkpoint", headers, new SampleEvent());
             }
 
             projectedEvents.Count.Should().Be(1);
@@ -87,7 +87,7 @@
                 return Task.FromResult(0);
             }
 
-            internal Task Dispatch(
+            internal Task DoDispatch(
                 string streamId,
                 Guid eventId,
                 int version,
@@ -96,7 +96,7 @@
                 IReadOnlyDictionary<string, object> headers, 
                 object @event)
             {
-                return base.Dispatch(streamId, eventId, version, timeStamp, checkpointToken, headers, @event);
+                return Dispatch(streamId, eventId, version, timeStamp, checkpointToken, headers, @event);
             }
         }
 

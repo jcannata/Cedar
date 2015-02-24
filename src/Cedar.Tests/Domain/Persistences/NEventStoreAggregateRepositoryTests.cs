@@ -3,7 +3,6 @@
     using System;
     using System.Threading.Tasks;
     using Cedar.Domain.Persistence;
-    using Cedar.NEventStore.Domain.Persistence;
     using FluentAssertions;
     using global::NEventStore;
     using Xunit;
