@@ -5,7 +5,7 @@ namespace Cedar.GetEventStore
 
     public static class StringExtensions
     {
-        public static string FormatStreamNameWithBucket(this string streamId, string bucketId = null)
+        public static string FormatStreamIdWithBucket(this string streamId, string bucketId = null)
         {
             Ensure.That(streamId, "streamId").IsNotNullOrWhiteSpace();
 

@@ -35,7 +35,7 @@
                     {
                         await host.Start();
 
-                        var streamId = Guid.NewGuid().ToString().FormatStreamNameWithBucket();
+                        var streamId = Guid.NewGuid().ToString().FormatStreamIdWithBucket();
 
                         Guid commitId = Guid.NewGuid();
 
@@ -82,7 +82,7 @@
                     {
                         await host.Start();
 
-                        var streamId = Guid.NewGuid().ToString().FormatStreamNameWithBucket();
+                        var streamId = Guid.NewGuid().ToString().FormatStreamIdWithBucket();
 
                         Guid commitId = Guid.NewGuid();
 

@@ -36,7 +36,7 @@
             CancellationToken _)
             where TAggregate : class, IAggregate
         {
-            var streamName = id.FormatStreamNameWithBucket(bucketId);
+            var streamName = id.FormatStreamIdWithBucket(bucketId);
             var slice = await _connection.ReadStreamEventsForwardAsync(streamName, StreamPosition.Start, PageSize, false).NotOnCapturedContext();
             if (slice.Status == SliceReadStatus.StreamDeleted || slice.Status == SliceReadStatus.StreamNotFound)
             {
@@ -75,12 +75,12 @@
             }
 
             int currentEventVersion = expectedVersion;
-            var streamName = aggregate.Id.FormatStreamNameWithBucket(bucketId);
+            var streamId = aggregate.Id.FormatStreamIdWithBucket(bucketId);
             updateHeaders = updateHeaders ?? (_ => { });
 
             var eventData = changes.Select(@event => _serializer.SerializeEventData(
                 @event, 
-                streamName, 
+                streamId, 
                 currentEventVersion++,
                 headers =>
                 {
@@ -90,7 +90,7 @@
                 }));
 
             // TODO DH expected version here should be specified ?
-            var result = await _connection.AppendToStreamAsync(streamName, expectedVersion - 1, eventData).NotOnCapturedContext();
+            var result = await _connection.AppendToStreamAsync(streamId, expectedVersion - 1, eventData).NotOnCapturedContext();
 
             if(result.LogPosition == Position.End)
             {

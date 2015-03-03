@@ -78,7 +78,7 @@
                         .WithTimeout(TimeSpan.FromSeconds(5));
 
                     await
-                        _connection.AppendToStreamAsync("events".FormatStreamNameWithBucket(),
+                        _connection.AppendToStreamAsync("events".FormatStreamIdWithBucket(),
                             ExpectedVersion.Any,
                             serializer.SerializeEventData(new TestEvent(), "events", 1));
 

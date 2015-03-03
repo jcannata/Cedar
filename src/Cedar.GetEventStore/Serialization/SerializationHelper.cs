@@ -23,7 +23,7 @@
         public static EventData SerializeEventData(
             this ISerializer serializer, 
             object @event, 
-            string streamName, 
+            string streamId, 
             int expectedVersion,
             Action<IDictionary<string, object>> updateHeaders = null, 
             Func<Type, string> getClrType = null)
@@ -47,7 +47,7 @@
             var metadata = Encode(serializer.Serialize(headers));
 
             // Creates a deterministic guid for eventid aids idempotency.
-            var entropy = data.Concat(BitConverter.GetBytes(expectedVersion)).Concat(Encode(streamName));
+            var entropy = data.Concat(BitConverter.GetBytes(expectedVersion)).Concat(Encode(streamId));
             var nextId = DeterministicGuidGenerator.Create(entropy);
 
             return new EventData(nextId, eventType.Name, true, data, metadata);

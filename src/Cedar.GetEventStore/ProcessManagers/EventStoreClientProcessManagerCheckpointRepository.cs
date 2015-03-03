@@ -80,7 +80,7 @@
 
         private static string GetStreamName(string processId, string bucketId = null)
         {
-            return ("checkpoints-" + processId).FormatStreamNameWithBucket(bucketId);
+            return ("checkpoints-" + processId).FormatStreamIdWithBucket(bucketId);
         }
     }
 }
