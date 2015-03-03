@@ -1,4 +1,4 @@
-﻿namespace Cedar.GetEventStore
+﻿namespace Cedar.Internal
 {
     using System;
     using System.Collections.Generic;
@@ -6,14 +6,12 @@
     using System.Security.Cryptography;
     using System.Text;
 
-    internal class DeterministicGuidGenerator
+    public class DeterministicGuidGenerator
     {
-        private Guid _nameSpace;
         private readonly byte[] _namespaceBytes;
 
         public DeterministicGuidGenerator(Guid guidNameSpace)
         {
-            _nameSpace = guidNameSpace;
             _namespaceBytes = guidNameSpace.ToByteArray();
             SwapByteOrder(_namespaceBytes);
         }
@@ -31,6 +29,7 @@
             {
                 algorithm.TransformBlock(_namespaceBytes, 0, _namespaceBytes.Length, null, 0);
                 algorithm.TransformFinalBlock(inputBuffer, 0, inputBuffer.Length);
+
                 hash = algorithm.Hash;
             }
 

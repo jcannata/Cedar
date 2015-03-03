@@ -1,4 +1,4 @@
-namespace Cedar.NEventStore.Handlers.TempImportFromNES
+namespace Cedar.TempImportFromNES
 {
     using System;
     using System.Collections.Concurrent;
@@ -16,7 +16,7 @@ namespace Cedar.NEventStore.Handlers.TempImportFromNES
     {
         public const int DefaultPollingInterval = 5000;
         private readonly IPersistStreams _persistStreams;
-        private readonly int _pageSize;
+        private const int PageSize = 1; // Paging is broken. Leave with a page size of 1 to work around it.
 
         private readonly ConcurrentDictionary<Guid, Subscriber> _subscribers =
             new ConcurrentDictionary<Guid, Subscriber>();
@@ -32,11 +32,9 @@ namespace Cedar.NEventStore.Handlers.TempImportFromNES
 
         public EventStoreClient(
             IPersistStreams persistStreams,
-            int pollingIntervalMilliseconds = DefaultPollingInterval,
-            int pageSize = 256)
+            int pollingIntervalMilliseconds = DefaultPollingInterval)
         {
             _persistStreams = persistStreams;
-            _pageSize = pageSize;
             _retrieveTimer = Observable
                 .Interval(TimeSpan.FromMilliseconds(pollingIntervalMilliseconds))
                 .Subscribe(_ => RetrieveNow());
@@ -53,7 +51,7 @@ namespace Cedar.NEventStore.Handlers.TempImportFromNES
             var subscriber = new Subscriber(
                 fromCheckpoint,
                 onCommit,
-                _pageSize,
+                PageSize,
                 RetrieveNow,
                 () =>
                 {
@@ -76,7 +74,7 @@ namespace Cedar.NEventStore.Handlers.TempImportFromNES
             {
                 foreach (var subscriber in _subscribers.Values.ToArray())
                 {
-                    if (subscriber.QueueLength >= _pageSize)
+                    if (subscriber.QueueLength >= PageSize)
                     {
                         continue;
                     }
@@ -87,9 +85,9 @@ namespace Cedar.NEventStore.Handlers.TempImportFromNES
                     {
                         commits = _persistStreams //Will be async
                             .GetFrom(subscriber.Checkpoint)
-                            .Take(_pageSize)
+                            .Take(PageSize)
                             .ToArray();
-                        if (commits.Length == _pageSize)
+                        if (commits.Length == PageSize)
                         {
                             // Only store full page prevents
                             _commitsCache.Set(key, commits);

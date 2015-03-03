@@ -1,4 +1,4 @@
-﻿namespace Cedar.NEventStore.Handlers
+﻿namespace Cedar.TempImportFromNES
 {
     using System;
     using System.Threading.Tasks;

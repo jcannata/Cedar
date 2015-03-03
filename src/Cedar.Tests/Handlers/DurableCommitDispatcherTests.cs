@@ -7,7 +7,7 @@
     using System.Threading.Tasks;
     using Cedar.GetEventStore;
     using Cedar.NEventStore.Handlers;
-    using Cedar.NEventStore.Handlers.TempImportFromNES;
+    using Cedar.TempImportFromNES;
     using FluentAssertions;
     using global::NEventStore;
     using Xunit;

@@ -8,6 +8,7 @@
     using Cedar.Handlers;
     using Cedar.Internal;
     using Cedar.Logging;
+    using Cedar.TempImportFromNES;
     using EnsureThat;
     using global::NEventStore;
 

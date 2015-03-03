@@ -5,6 +5,7 @@
     using System.Linq;
     using System.Text;
     using Cedar.Handlers;
+    using Cedar.Internal;
     using EnsureThat;
     using EventStore.ClientAPI;
 
@@ -45,8 +46,8 @@
 
             var metadata = Encode(serializer.Serialize(headers));
 
+            // Creates a deterministic guid for eventid aids idempotency.
             var entropy = data.Concat(BitConverter.GetBytes(expectedVersion)).Concat(Encode(streamName));
-
             var nextId = DeterministicGuidGenerator.Create(entropy);
 
             return new EventData(nextId, eventType.Name, true, data, metadata);

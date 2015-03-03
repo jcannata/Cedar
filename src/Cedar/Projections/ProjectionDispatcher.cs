@@ -71,7 +71,7 @@
 
         public virtual void Dispose()
         {
-            if(_isDisposed.CompareExchange(true, false))
+            if(_isDisposed.EnsureCalledOnce())
             {
                 return;
             }

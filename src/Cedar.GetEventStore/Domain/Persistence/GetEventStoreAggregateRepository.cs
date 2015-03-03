@@ -21,11 +21,11 @@
 
         public GetEventStoreAggregateRepository(
             IEventStoreConnection connection,
-            ISerializer serializer,
+            ISerializer serializer = null,
             IAggregateFactory aggregateFactory = null)
         {
             _connection = connection;
-            _serializer = serializer;
+            _serializer = serializer ?? new DefaultJsonSerializer();
             _aggregateFactory = aggregateFactory ?? new DefaultAggregateFactory();
         }
 
