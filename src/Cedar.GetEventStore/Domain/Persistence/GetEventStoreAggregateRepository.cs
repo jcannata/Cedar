@@ -12,29 +12,27 @@
     using Cedar.Internal;
     using EventStore.ClientAPI;
 
-    public class GetEventStoreAggregateRepository : IAggregateRepository
+    public class GetEventStoreAggregateRepository : AggregateRepositoryBase
     {
         private const int PageSize = 512;
         private readonly IEventStoreConnection _connection;
         private readonly ISerializer _serializer;
-        private readonly IAggregateFactory _aggregateFactory;
 
         public GetEventStoreAggregateRepository(
             IEventStoreConnection connection,
             ISerializer serializer = null,
-            IAggregateFactory aggregateFactory = null)
+            CreateAggregate createAggregate = null)
+            : base(createAggregate)
         {
             _connection = connection;
             _serializer = serializer ?? new DefaultJsonSerializer();
-            _aggregateFactory = aggregateFactory ?? new DefaultAggregateFactory();
         }
 
-        public async Task<TAggregate> GetById<TAggregate>(
+        public override async Task<TAggregate> GetById<TAggregate>(
             string bucketId,
             string id,
             int version,
             CancellationToken _)
-            where TAggregate : class, IAggregate
         {
             var streamName = id.FormatStreamIdWithBucket(bucketId);
             var slice = await _connection.ReadStreamEventsForwardAsync(streamName, StreamPosition.Start, PageSize, false).NotOnCapturedContext();
@@ -43,7 +41,7 @@
                 return null;
             }
 
-            var aggregate = _aggregateFactory.Build(typeof(TAggregate), id);
+            var aggregate = CreateAggregate<TAggregate>(id);
             ApplySlice(version, slice, aggregate);
 
             while (false == slice.IsEndOfStream)
@@ -55,14 +53,14 @@
             return (TAggregate)aggregate;
         }
 
-        public async Task Save(
+        public override async Task Save(
             IAggregate aggregate,
             string bucketId,
             Guid commitId,
             Action<IDictionary<string, object>> updateHeaders,
             CancellationToken cancellationToken)
         {
-            var changes = aggregate.GetUncommittedEvents().OfType<object>().ToList();
+            var changes = aggregate.GetUncommittedEvents().ToList();
             var expectedVersion = aggregate.Version - changes.Count;
 
             if(!changes.Any())

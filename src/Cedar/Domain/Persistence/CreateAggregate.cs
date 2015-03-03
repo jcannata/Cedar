@@ -1,16 +1,15 @@
-namespace Cedar.Domain
+namespace Cedar.Domain.Persistence
 {
     using System;
     using System.Linq;
     using System.Reflection;
-    using Cedar.Domain.Persistence;
 
     /// <summary>
     /// Can construct aggregates that have a public or protected constructor that takes the aggregate Id as a string.
     /// </summary>
-    public class DefaultAggregateFactory : IAggregateFactory
+    public static class DefaultCreateAggregate
     {
-        public IAggregate Build(Type type, string id)
+        public static IAggregate Create(Type type, string id)
         {
             var constructor = type
                 .GetTypeInfo()

@@ -53,12 +53,13 @@
     <Compile Include="Domain\AggregateBase.cs" />
     <Compile Include="Domain\AggregateExtensions.cs" />
     <Compile Include="Domain\ConventionEventRouter.cs" />
-    <Compile Include="Domain\DefaultAggregateFactory.cs" />
+    <Compile Include="Domain\Persistence\CreateAggregate.cs" />
     <Compile Include="Domain\DefaultConflictDetector.cs" />
     <Compile Include="Domain\HandlerForDomainEventNotFoundException.cs" />
     <Compile Include="Domain\IAggregate.cs" />
     <Compile Include="Domain\IConflictDetector.cs" />
     <Compile Include="Domain\IEventRouter.cs" />
+    <Compile Include="Domain\Persistence\AggregateRepositoryBase.cs" />
     <Compile Include="Domain\Persistence\ConflictingCommandException.cs" />
     <Compile Include="Domain\Persistence\ExceptionMessages.Designer.cs">
       <AutoGen>True</AutoGen>

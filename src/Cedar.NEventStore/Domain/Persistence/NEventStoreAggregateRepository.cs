@@ -10,40 +10,34 @@ namespace Cedar.Domain.Persistence
     using global::NEventStore;
     using global::NEventStore.Persistence;
 
-    public class NEventStoreAggregateRepository : IAggregateRepository
+    public class NEventStoreAggregateRepository : AggregateRepositoryBase
     {
         private const string AggregateTypeHeader = "AggregateType";
-        private readonly IAggregateFactory _aggregateFactory;
         private readonly IStoreEvents _eventStore;
         private readonly ConcurrentDictionary<Tuple<string, string>, int> _streamHeads;
 
-        public NEventStoreAggregateRepository(IStoreEvents eventStore)
-            : this(eventStore, new DefaultAggregateFactory())
-        {}
-
-        public NEventStoreAggregateRepository(IStoreEvents eventStore, IAggregateFactory aggregateFactory)
+        public NEventStoreAggregateRepository(IStoreEvents eventStore, CreateAggregate createAggregate = null)
+            : base(createAggregate)
         {
             _eventStore = eventStore;
-            _aggregateFactory = aggregateFactory;
             _streamHeads = new ConcurrentDictionary<Tuple<string, string>, int>();
         }
 
-        public Task<TAggregate> GetById<TAggregate>(string bucketId, string id, int version, CancellationToken cancellationToken)
-            where TAggregate : class, IAggregate
+        public override Task<TAggregate> GetById<TAggregate>(string bucketId, string id, int version, CancellationToken cancellationToken)
         {
             var commits = _eventStore.Advanced.GetFrom(bucketId, id, 0, version).ToList();
             if(commits.Count == 0)
             {
                 return Task.FromResult(default(TAggregate));
             }
-            IAggregate aggregate = GetAggregate<TAggregate>(id);
+            IAggregate aggregate = CreateAggregate<TAggregate>(id);
             var streamHead = ApplyEventsToAggregate(commits, aggregate);
             _streamHeads.AddOrUpdate(Tuple.Create(bucketId, id), streamHead, (key, _) => streamHead);
             //TODO NES 6 async support
             return Task.FromResult(aggregate as TAggregate);
         }
 
-        public Task Save(
+        public override Task Save(
             IAggregate aggregate,
             string bucketId,
             Guid commitId,
@@ -87,11 +81,6 @@ namespace Cedar.Domain.Persistence
                     throw new PersistenceException(e.Message, e);
                 }
             }
-        }
-
-        private IAggregate GetAggregate<TAggregate>(string streamId)
-        {
-            return _aggregateFactory.Build(typeof(TAggregate), streamId);
         }
 
         private static int ApplyEventsToAggregate(IEnumerable<ICommit> commits, IAggregate aggregate)

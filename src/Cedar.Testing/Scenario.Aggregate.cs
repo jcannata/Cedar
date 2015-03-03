@@ -9,6 +9,7 @@
     using System.Text;
     using System.Threading.Tasks;
     using Cedar.Domain;
+    using Cedar.Domain.Persistence;
     using Cedar.Testing.Printing;
 
     public static partial class Scenario
@@ -16,7 +17,7 @@
         public static Aggregate.IGiven<T> ForAggregate<T>(Func<string, T> factory = null, string aggregateId = null, [CallerMemberName] string scenarioName = null) where T : IAggregate
         {
             aggregateId = aggregateId ?? "testid";
-            factory = factory ?? (id => (T) new DefaultAggregateFactory().Build(typeof (T), id));
+            factory = factory ?? (id => (T)DefaultCreateAggregate.Create(typeof (T), id));
 
             return new Aggregate.ScenarioBuilder<T>(factory, aggregateId, scenarioName);
         }

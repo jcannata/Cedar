@@ -31,21 +31,4 @@ namespace Cedar.Domain.Persistence
             Action<IDictionary<string, object>> updateHeaders,
             CancellationToken cancellationToken);
     }
-
-    public abstract class AggregateRepositoryBase : IAggregateRepository
-    {
-        public abstract Task<TAggregate> GetById<TAggregate>(
-            string bucketId,
-            string id,
-            int version,
-            CancellationToken cancellationToken)
-            where TAggregate : class, IAggregate;
-
-        public abstract Task Save(
-            IAggregate aggregate,
-            string bucketId,
-            Guid commitId,
-            Action<IDictionary<string, object>> updateHeaders,
-            CancellationToken cancellationToken);
-    }
 }
