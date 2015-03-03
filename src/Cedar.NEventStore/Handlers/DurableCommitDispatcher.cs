@@ -8,6 +8,7 @@
     using Cedar.Handlers;
     using Cedar.Internal;
     using Cedar.Logging;
+    using EnsureThat;
     using global::NEventStore;
 
     /// <summary>
@@ -44,11 +45,9 @@
         public DurableCommitDispatcher(
             [NotNull] IEventStoreClient eventStoreClient,
             [NotNull] ICheckpointRepository checkpointRepository,
-            [NotNull] IHandlerResolver handlerResolver):
-            this(eventStoreClient, checkpointRepository, handlerResolver.DispatchCommit)
-        {
-            Guard.EnsureNotNull(handlerResolver, "handlerModule");
-        }
+            [NotNull] IHandlerResolver handlerResolver)
+            : this(eventStoreClient, checkpointRepository, handlerResolver.DispatchCommit)
+        {}
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DurableCommitDispatcher"/> class.
@@ -71,9 +70,9 @@
             [NotNull] ICheckpointRepository checkpointRepository,
             [NotNull] Func<ICommit, CancellationToken, Task> dispatchCommit)
         {
-            Guard.EnsureNotNull(eventStoreClient, "eventStoreClient");
-            Guard.EnsureNotNull(checkpointRepository, "checkpointRepository");
-            Guard.EnsureNotNull(dispatchCommit, "dispatchCommit");
+            Ensure.That(eventStoreClient, "eventStoreClient").IsNotNull();
+            Ensure.That(checkpointRepository, "checkpointRepository").IsNotNull();
+            Ensure.That(dispatchCommit, "dispatchCommit").IsNotNull();
 
             _eventStoreClient = eventStoreClient;
             _checkpointRepository = checkpointRepository;

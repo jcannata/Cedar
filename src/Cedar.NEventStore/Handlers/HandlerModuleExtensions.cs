@@ -5,6 +5,7 @@ namespace Cedar.NEventStore.Handlers
     using System.Threading.Tasks;
     using Cedar.Annotations;
     using Cedar.Handlers;
+    using EnsureThat;
     using global::NEventStore;
     using EventMessage = global::NEventStore.EventMessage;
 
@@ -15,8 +16,8 @@ namespace Cedar.NEventStore.Handlers
            [NotNull] ICommit commit,
            CancellationToken cancellationToken)
         {
-            Guard.EnsureNotNull(handlerResolver, "handlerModules");
-            Guard.EnsureNotNull(commit, "commit");
+            Ensure.That(handlerResolver, "handlerModules").IsNotNull();
+            Ensure.That(commit, "commit").IsNotNull();
 
             var methodInfo = typeof(HandlerModuleExtensions)
                 .GetMethod("DispatchDomainEvent", BindingFlags.Static | BindingFlags.NonPublic);

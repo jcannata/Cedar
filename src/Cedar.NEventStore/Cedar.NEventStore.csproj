@@ -33,6 +33,10 @@
     <NoWarn>1591</NoWarn>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="EnsureThat, Version=2.0.0.39118, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Ensure.That.2.0.0\lib\portable-net4+sl5+netcore45+wpa81+wp8+MonoAndroid1+MonoTouch1\EnsureThat.dll\EnsureThat.dll</HintPath>
+    </Reference>
     <Reference Include="NEventStore">
       <HintPath>..\packages\NEventStore.5.1.0\lib\net40\NEventStore.dll</HintPath>
     </Reference>
@@ -61,7 +65,6 @@
     </Compile>
     <Compile Include="Handlers\DictionaryExtensions.cs" />
     <Compile Include="Domain\Persistence\NEventStoreAggregateRepository.cs" />
-    <Compile Include="Guard.cs" />
     <Compile Include="Handlers\NEventStoreMessage.cs" />
     <Compile Include="Handlers\DurableCommitDispatcher.cs" />
     <Compile Include="Handlers\HandlerModuleExtensions.cs" />

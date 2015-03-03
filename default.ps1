@@ -49,7 +49,8 @@ task ILMerge -depends Compile {
 
     $dllDir = "$srcDir\Cedar.NEventStore\bin\Release"
     $inputDlls = "$dllDir\Cedar.NEventStore.dll"
-    @(	"System.Reactive.Core",
+    @(	"EnsureThat",
+        "System.Reactive.Core",
         "System.Reactive.Interfaces",
         "System.Reactive.Linq",`
         "System.Reactive.PlatformServices") |% { $inputDlls = "$inputDlls $dllDir\$_.dll" }
