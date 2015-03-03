@@ -61,7 +61,7 @@ namespace Cedar.Domain.Persistence
                 }
 
                 var commitAttempt = new CommitAttempt(bucketId, aggregate.Id, streamHead, commitId, aggregate.Version, DateTime.UtcNow, headers,
-                    aggregate.GetUncommittedEvents().OfType<object>().Select(@event => new EventMessage
+                    aggregate.GetUncommittedEvents().Select(@event => new EventMessage
                     {
                         Body = @event
                     }));

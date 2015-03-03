@@ -1,13 +1,13 @@
 namespace Cedar.Domain
 {
     using System;
-    using System.Collections;
     using System.Collections.Generic;
+    using System.Collections.ObjectModel;
     using EnsureThat;
 
     public abstract class AggregateBase : IAggregate, IEquatable<IAggregate>
     {
-        private readonly ICollection<object> _uncommittedEvents = new LinkedList<object>();
+        private readonly List<object> _uncommittedEvents = new List<object>();
         private readonly IEventRouter _registeredRoutes;
         private int _version;
         private readonly string _id;
@@ -42,9 +42,9 @@ namespace Cedar.Domain
             _version++;
         }
 
-        ICollection IAggregate.GetUncommittedEvents()
+        IReadOnlyCollection<object> IAggregate.GetUncommittedEvents()
         {
-            return (ICollection) _uncommittedEvents;
+            return new ReadOnlyCollection<object>(_uncommittedEvents);
         }
 
         void IAggregate.ClearUncommittedEvents()

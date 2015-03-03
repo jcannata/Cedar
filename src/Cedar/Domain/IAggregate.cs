@@ -1,6 +1,6 @@
 namespace Cedar.Domain
 {
-    using System.Collections;
+    using System.Collections.Generic;
 
     public interface IAggregate
     {
@@ -10,7 +10,7 @@ namespace Cedar.Domain
 
         void ApplyEvent(object @event);
 
-        ICollection GetUncommittedEvents();
+        IReadOnlyCollection<object> GetUncommittedEvents();
 
         void ClearUncommittedEvents();
     }
