@@ -3,6 +3,7 @@
     using System;
     using System.Threading.Tasks;
     using Cedar.Domain;
+    using FluentAssertions;
     using Xunit;
 
     public class AggregateTests
@@ -67,6 +68,7 @@
             {
                 RaiseEvent(new SomethingHappened());
             }
+
             protected ConstructorBehaviorAggregate(string id) : base(id)
             {}
 
@@ -81,7 +83,7 @@
                 .When(a => a.DoSomething())
                 .Then(new SomethingHappened());
 
-            Assert.True(result.Passed);
+            result.Passed.Should().BeTrue();
         }
 
         [Fact]
@@ -91,7 +93,7 @@
                 .When(() => new ConstructorBehaviorAggregate(Guid.Empty))
                 .Then(new SomethingHappened());
 
-            Assert.True(result.Passed);
+            result.Passed.Should().BeTrue();
         }
 
         [Fact]
@@ -101,7 +103,7 @@
                 .When(a => a.DoSomething())
                 .Then(new SomethingHappened());
 
-            Assert.True(result.Passed);
+            result.Passed.Should().BeTrue();
         }
 
         [Fact]
@@ -111,8 +113,8 @@
                 .When(a => a.DoSomething())
                 .Then(new SomethingHappened());
 
-            Assert.False(result.Passed);
-            Assert.IsType<ScenarioException>(result.Results);
+            result.Passed.Should().BeFalse();
+            result.Results.Should().BeOfType<ScenarioException>();
         }
 
 
@@ -123,8 +125,8 @@
                 .When(a => a.DoSomething())
                 .Then(new SomethingHappened());
 
-            Assert.False(result.Passed);
-            Assert.IsType<ScenarioException>(result.Results);
+            result.Passed.Should().BeFalse();
+            result.Results.Should().BeOfType<ScenarioException>();
         }
 
 
@@ -135,8 +137,8 @@
                 .When(a => a.DoSomething())
                 .ThenShouldThrow<InvalidOperationException>();
 
-            Assert.True(result.Passed);
-            Assert.IsType<InvalidOperationException>(result.Results);
+            result.Passed.Should().BeTrue();
+            result.Results.Should().BeOfType<InvalidOperationException>();
         }
     }
 }
