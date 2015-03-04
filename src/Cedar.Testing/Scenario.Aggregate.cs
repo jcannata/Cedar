@@ -70,6 +70,7 @@
                     _factory = factory;
                     _aggregateId = aggregateId;
                     _name = name;
+                    _afterGiven = aggregate => aggregate.TakeUncommittedEvents();
                     _runGiven = aggregate =>
                     {
                         using (var rehydrateAggregate = aggregate.BeginRehydrate())
@@ -130,7 +131,7 @@
 
                     _runThen = aggregate =>
                     {
-                        var uncommittedEvents = new List<object>(aggregate.TakeUncommittedEvents().Cast<object>());
+                        var uncommittedEvents = new List<object>(aggregate.TakeUncommittedEvents().Select(e => e.Event));
                         
                         _results = uncommittedEvents;
                         
@@ -157,7 +158,7 @@
 
                     _runThen = aggregate =>
                     {
-                        var uncommittedEvents = new List<object>(aggregate.TakeUncommittedEvents().Cast<object>());
+                        var uncommittedEvents = new List<object>(aggregate.TakeUncommittedEvents().Select(e => e.Event));
                         
                         _results = uncommittedEvents;
                         
