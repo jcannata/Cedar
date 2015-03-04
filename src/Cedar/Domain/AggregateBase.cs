@@ -44,9 +44,11 @@ namespace Cedar.Domain
             get { return _originalVersion; }
         }
 
-        IReadOnlyCollection<IUncommittedEvent> IAggregate.TakeUncommittedEvents()
+        IUncommittedEvents IAggregate.TakeUncommittedEvents()
         {
-            var uncommittedEvents = new ReadOnlyCollection<IUncommittedEvent>(_uncommittedEvents.ToArray());
+            var uncommittedEvents = new UncommittedEvents(
+                _originalVersion,
+                new ReadOnlyCollection<IUncommittedEvent>(_uncommittedEvents.ToArray()));
             _uncommittedEvents.Clear();
             _originalVersion = Version;
             return uncommittedEvents;
@@ -106,6 +108,22 @@ namespace Cedar.Domain
             public void ApplyEvent(object @event)
             {
                 _aggregateBase.ApplyEvent(@event);
+            }
+        }
+
+        private class UncommittedEvents : ReadOnlyCollection<IUncommittedEvent>, IUncommittedEvents
+        {
+            private readonly int _originalVersion;
+
+
+            public UncommittedEvents(int originalVersion, IList<IUncommittedEvent> events) : base(events)
+            {
+                _originalVersion = originalVersion;
+            }
+
+            public int OriginalVersion
+            {
+                get { return _originalVersion; }
             }
         }
 

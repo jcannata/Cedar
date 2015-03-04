@@ -60,7 +60,6 @@
             CancellationToken cancellationToken)
         {
             var changes = aggregate.TakeUncommittedEvents();
-            
 
             if(changes.Count == 0)
             {
@@ -68,22 +67,17 @@
             }
             if(changes.Count > PageSize)
             {
-                throw new ArgumentOutOfRangeException("aggregate.GetUncommittedEvents", "Too many changes found. You are probably doing something wrong.");
+                throw new InvalidOperationException(string.Format("Number of events {0} exceeded the fixed page size {1}", changes.Count, PageSize));
             }
 
-            var expectedVersion = aggregate.Version - changes.Count;
-            int currentEventVersion = expectedVersion;
             var streamId = aggregate.Id.FormatStreamIdWithBucket(bucketId);
             updateHeaders = updateHeaders ?? (_ => { });
 
-
-            var eventData = changes.Select(@event =>
+            var eventData = changes.Select(uncommittedEvent =>
             {
-                var eventId = GenerateEventId(commitId, @currentEventVersion, currentEventVersion++, streamId);
-
                 return _serializer.SerializeEventData(
-                    @event,
-                    eventId,
+                    uncommittedEvent.Event,
+                    uncommittedEvent.EventId,
                     headers =>
                     {
                         updateHeaders(headers);
@@ -91,8 +85,7 @@
                     });
             });
 
-            // TODO DH expected version here should be specified ?
-            var result = await _connection.AppendToStreamAsync(streamId, expectedVersion - 1, eventData).NotOnCapturedContext();
+            var result = await _connection.AppendToStreamAsync(streamId, changes.OriginalVersion - 1, eventData).NotOnCapturedContext();
 
             if(result.LogPosition == Position.End)
             {

@@ -45,45 +45,43 @@ namespace Cedar.Domain.Persistence
             CancellationToken cancellationToken)
         {
             Dictionary<string, object> headers = PrepareHeaders(aggregate, updateHeaders);
-            while (true)
+            int streamHead;
+
+            if (false == _streamHeads.TryGetValue(Tuple.Create(bucketId, aggregate.Id), out streamHead))
             {
-                int streamHead;
+                streamHead = 1;
+            }
+            var uncommittedEvents = aggregate.TakeUncommittedEvents();
+            if(uncommittedEvents.Count == 0)
+            {
+                return Task.FromResult(0);
+            }
 
-                if (false == _streamHeads.TryGetValue(Tuple.Create(bucketId, aggregate.Id), out streamHead))
+            var commitAttempt = new CommitAttempt(bucketId, aggregate.Id, streamHead, commitId, aggregate.Version, DateTime.UtcNow, headers,
+                uncommittedEvents.Select(uncommittedEvent => new EventMessage
                 {
-                    streamHead = 1;
-                }
-
-
-                var commitAttempt = new CommitAttempt(bucketId, aggregate.Id, streamHead, commitId, aggregate.Version, DateTime.UtcNow, headers,
-                    aggregate.TakeUncommittedEvents().Select(@event => new EventMessage
+                    Body = uncommittedEvent.Event,
+                    Headers = new Dictionary<string, object>
                     {
-                        Body = @event,
-                       /* Headers = new Dictionary<string, object>()
-                        {
-                            "EventId", 
-                        }*/
-                    }));
-
-                try
-                {
-                    //TODO NES 6 async support
-                    //await stream.CommitChanges(commitId).NotOnCapturedContext()
-                    _eventStore.Advanced.Commit(commitAttempt);
-                    return Task.FromResult(0);
-                }
-                catch(DuplicateCommitException)
-                {
-                    return Task.FromResult(0);
-                }
-                catch(ConcurrencyException e)
-                {
-                    throw new ConflictingCommandException(e.Message, e);
-                }
-                catch(StorageException e)
-                {
-                    throw new PersistenceException(e.Message, e);
-                }
+                        { "EventId", uncommittedEvent.EventId }
+                    }
+                }));
+            try
+            {
+                _eventStore.Advanced.Commit(commitAttempt);
+                return Task.FromResult(0);
+            }
+            catch(DuplicateCommitException)
+            {
+                return Task.FromResult(0);
+            }
+            catch(ConcurrencyException e)
+            {
+                throw new ConflictingCommandException(e.Message, e);
+            }
+            catch(StorageException e)
+            {
+                throw new PersistenceException(e.Message, e);
             }
         }
 

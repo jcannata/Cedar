@@ -55,6 +55,7 @@
     <Compile Include="Domain\ConventionEventRouter.cs" />
     <Compile Include="Domain\IRehydrateAggregate.cs" />
     <Compile Include="Domain\IUncommittedEvent.cs" />
+    <Compile Include="Domain\IUncommittedEvents.cs" />
     <Compile Include="Domain\Persistence\CreateAggregate.cs" />
     <Compile Include="Domain\DefaultConflictDetector.cs" />
     <Compile Include="Domain\HandlerForDomainEventNotFoundException.cs" />

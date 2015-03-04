@@ -1,7 +1,5 @@
 namespace Cedar.Domain
 {
-    using System.Collections.Generic;
-
     public interface IAggregate
     {
         /// <summary>
@@ -36,6 +34,6 @@ namespace Cedar.Domain
         /// <returns>
         ///     A readonly collection of uncommitted events;
         /// </returns>
-        IReadOnlyCollection<IUncommittedEvent> TakeUncommittedEvents();
+        IUncommittedEvents TakeUncommittedEvents();
     }
 }
