@@ -7,6 +7,7 @@
     using System.Reactive.Linq;
     using System.Reactive.Threading.Tasks;
     using System.Threading.Tasks;
+    using Cedar.Domain.Persistence;
     using Cedar.GetEventStore;
     using Cedar.GetEventStore.Handlers;
     using Cedar.GetEventStore.ProcessManagers;
@@ -33,7 +34,7 @@
         private readonly Task _nodeStarted;
         private readonly Guid _orderId;
         private readonly ISerializer _serializer;
-        private readonly string _streamName;
+        private readonly string _streamId;
 
         public ProcessManagerHandlerTests()
         {
@@ -103,7 +104,7 @@
                 () => { });
 
             _orderId = Guid.NewGuid();
-            _streamName = ("orders-" + _orderId.ToString("n")).FormatStreamIdWithBucket();
+            _streamId = ("orders-" + _orderId.ToString("n")).FormatStreamIdWithBucket();
             _correlationId = _orderId.ToString();
         }
 
@@ -166,7 +167,7 @@
         {
             await _nodeStarted;
 
-            return await AppendToStream(_streamName,
+            return await AppendToStream(_streamId,
                 ExpectedVersion.NoStream,
                 new OrderPlaced
                 {
@@ -178,7 +179,7 @@
         {
             await _nodeStarted;
 
-            return await AppendToStream(_streamName,
+            return await AppendToStream(_streamId,
                 0,
                 new BillingSucceeded
                 {
@@ -200,11 +201,13 @@
                 });
         }
 
-        private Task<WriteResult> AppendToStream(string streamName, int expectedVersion, object e)
+        private Task<WriteResult> AppendToStream(string streamId, int expectedVersion, object @event)
         {
-            return _connection.AppendToStreamAsync(streamName.FormatStreamIdWithBucket(),
+            var eventId = DeterministicEventIdGenerator.Generate(@event, streamId, expectedVersion);
+            return _connection.AppendToStreamAsync(
+                streamId.FormatStreamIdWithBucket(),
                 expectedVersion,
-                _serializer.SerializeEventData(e, streamName, 0));
+                _serializer.SerializeEventData(@event, @eventId));
         }
 
         private class OrderFulfillment : ObservableProcessManager

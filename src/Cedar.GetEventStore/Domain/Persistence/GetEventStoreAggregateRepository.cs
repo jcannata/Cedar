@@ -34,23 +34,22 @@
             int version,
             CancellationToken _)
         {
-            var streamName = id.FormatStreamIdWithBucket(bucketId);
-            var slice = await _connection.ReadStreamEventsForwardAsync(streamName, StreamPosition.Start, PageSize, false).NotOnCapturedContext();
+            var streamId = id.FormatStreamIdWithBucket(bucketId);
+            var slice = await _connection.ReadStreamEventsForwardAsync(streamId, StreamPosition.Start, PageSize, false).NotOnCapturedContext();
             if (slice.Status == SliceReadStatus.StreamDeleted || slice.Status == SliceReadStatus.StreamNotFound)
             {
-                return null;
+                return default(TAggregate);
             }
-
             var aggregate = CreateAggregate<TAggregate>(id);
             ApplySlice(version, slice, aggregate);
 
             while (false == slice.IsEndOfStream)
             {
-                slice = await _connection.ReadStreamEventsForwardAsync(streamName, slice.NextEventNumber, PageSize, false).NotOnCapturedContext();
+                slice = await _connection.ReadStreamEventsForwardAsync(streamId, slice.NextEventNumber, PageSize, false).NotOnCapturedContext();
                 ApplySlice(version, slice, aggregate);
             }
 
-            return (TAggregate)aggregate;
+            return aggregate;
         }
 
         public override async Task Save(
@@ -60,32 +59,37 @@
             Action<IDictionary<string, object>> updateHeaders,
             CancellationToken cancellationToken)
         {
-            var changes = aggregate.GetUncommittedEvents().ToList();
-            var expectedVersion = aggregate.Version - changes.Count;
+            var changes = aggregate.TakeUncommittedEvents();
+            
 
-            if(!changes.Any())
+            if(changes.Count == 0)
             {
-                throw new ArgumentOutOfRangeException("aggregate.GetUncommittedEvents", "No changes found.");
+                return;
             }
             if(changes.Count > PageSize)
             {
                 throw new ArgumentOutOfRangeException("aggregate.GetUncommittedEvents", "Too many changes found. You are probably doing something wrong.");
             }
 
+            var expectedVersion = aggregate.Version - changes.Count;
             int currentEventVersion = expectedVersion;
             var streamId = aggregate.Id.FormatStreamIdWithBucket(bucketId);
             updateHeaders = updateHeaders ?? (_ => { });
 
-            var eventData = changes.Select(@event => _serializer.SerializeEventData(
-                @event, 
-                streamId, 
-                currentEventVersion++,
-                headers =>
-                {
-                    updateHeaders(headers);
 
-                    headers[EventMessageHeaders.CommitId] = commitId;
-                }));
+            var eventData = changes.Select(@event =>
+            {
+                var eventId = GenerateEventId(commitId, @currentEventVersion, currentEventVersion++, streamId);
+
+                return _serializer.SerializeEventData(
+                    @event,
+                    eventId,
+                    headers =>
+                    {
+                        updateHeaders(headers);
+                        headers[EventMessageHeaders.CommitId] = commitId;
+                    });
+            });
 
             // TODO DH expected version here should be specified ?
             var result = await _connection.AppendToStreamAsync(streamId, expectedVersion - 1, eventData).NotOnCapturedContext();
@@ -102,10 +106,11 @@
             var eventsToApply = from @event in slice.Events
                 where ++version <= maxVersion
                 select _serializer.DeserializeEventData(@event);
-         
-            eventsToApply.ForEach(aggregate.ApplyEvent);
 
-            aggregate.ClearUncommittedEvents();
+            using(var rehydrateAggregate = aggregate.BeginRehydrate())
+            {
+                eventsToApply.ForEach(rehydrateAggregate.ApplyEvent);
+            }
         }
     }
 }

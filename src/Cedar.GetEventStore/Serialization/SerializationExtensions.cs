@@ -2,29 +2,17 @@
 {
     using System;
     using System.Collections.Generic;
-    using System.Linq;
     using System.Text;
     using Cedar.Handlers;
-    using Cedar.Internal;
     using EnsureThat;
     using EventStore.ClientAPI;
 
-    public static class SerializationHelper
+    public static class SerializationExtensions
     {
-        private const string Namespace = "9D18DAC8-678B-47E5-8406-E9B7FA19A6C5";
-
-        private static readonly DeterministicGuidGenerator DeterministicGuidGenerator;
-
-        static SerializationHelper()
-        {
-            DeterministicGuidGenerator = new DeterministicGuidGenerator(Guid.Parse(Namespace));
-        }
-
         public static EventData SerializeEventData(
             this ISerializer serializer, 
             object @event, 
-            string streamId, 
-            int expectedVersion,
+            Guid eventId,
             Action<IDictionary<string, object>> updateHeaders = null, 
             Func<Type, string> getClrType = null)
         {
@@ -46,11 +34,7 @@
 
             var metadata = Encode(serializer.Serialize(headers));
 
-            // Creates a deterministic guid for eventid aids idempotency.
-            var entropy = data.Concat(BitConverter.GetBytes(expectedVersion)).Concat(Encode(streamId));
-            var nextId = DeterministicGuidGenerator.Create(entropy);
-
-            return new EventData(nextId, eventType.Name, true, data, metadata);
+            return new EventData(eventId, eventType.Name, true, data, metadata);
         }
 
         public static object DeserializeEventData(
@@ -76,12 +60,12 @@
             return @event;
         }
 
-        static byte[] Encode(string s)
+        private static byte[] Encode(string s)
         {
             return Encoding.UTF8.GetBytes(s);
         }
 
-        static string Decode(byte[] b)
+        private static string Decode(byte[] b)
         {
             return Encoding.UTF8.GetString(b);
         }

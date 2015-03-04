@@ -113,7 +113,11 @@
 
             _disposed.Cancel();
             _projectedEvents.Dispose();
-            _subscription.Stop();
+            if(_subscription != null)
+            {
+                _subscription.Stop();
+                _subscription = null;
+            }
         }
 
         private async Task RecoverSubscription()
@@ -168,11 +172,11 @@
             private readonly CancellationToken _token;
             private readonly ConcurrentQueue<ResolvedEvent> _events;
             private readonly InterlockedBoolean _isPushing;
-            private static readonly ILog Logger;
+            private static readonly ILog s_logger;
 
             static SimpleQueue()
             {
-                Logger = LogProvider.For<SimpleQueue>();
+                s_logger = LogProvider.For<SimpleQueue>();
             }
 
             public SimpleQueue(Func<ResolvedEvent, CancellationToken, Task> onResolvedEvent, CancellationToken token)
@@ -206,7 +210,7 @@
                         }
                         catch(Exception ex)
                         {
-                            Logger.ErrorException(ex.Message, ex);
+                            s_logger.ErrorException(ex.Message, ex);
                         }
                     }
                     _isPushing.Set(false);

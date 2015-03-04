@@ -20,7 +20,7 @@ namespace Cedar.Domain.Persistence
             int version,
             CancellationToken cancellationToken)
             where TAggregate : class, IAggregate;
-
+       
         public abstract Task Save(
             IAggregate aggregate,
             string bucketId,
@@ -28,9 +28,15 @@ namespace Cedar.Domain.Persistence
             Action<IDictionary<string, object>> updateHeaders,
             CancellationToken cancellationToken);
 
-        protected IAggregate CreateAggregate<TAggregate>(string streamId)
+        protected TAggregate CreateAggregate<TAggregate>(string id)
+            where TAggregate : IAggregate
         {
-            return _createAggregate(typeof(TAggregate), streamId);
+            return (TAggregate)_createAggregate(typeof(TAggregate), id);
+        }
+
+        protected Guid GenerateEventId(Guid commitId, object @event, int expectedVersion, string streamId)
+        {
+            return DeterministicEventIdGenerator.Generate(@event, expectedVersion, streamId, commitId);
         }
     }
 }

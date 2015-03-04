@@ -1,7 +1,9 @@
 ﻿namespace Cedar.GetEventStore.ProcessManagers
 {
+    using System;
     using System.Threading;
     using System.Threading.Tasks;
+    using Cedar.Domain.Persistence;
     using Cedar.GetEventStore.Handlers;
     using Cedar.GetEventStore.Serialization;
     using Cedar.ProcessManagers;
@@ -41,7 +43,7 @@
         public async Task<CompareablePosition> GetCheckpoint(string processId, CancellationToken ct, string bucketId = null)
         {
             int streamPosition = StreamPosition.End;
-            var streamName = GetStreamName(processId, bucketId);
+            var streamName = GetStreamId(processId, bucketId);
             do
             {
                 if(ct.IsCancellationRequested)
@@ -73,12 +75,14 @@
 
         private Task AppendToStream(string processId, object @event, string bucketId = null)
         {
-            return _connection.AppendToStreamAsync(GetStreamName(processId, bucketId),
-                ExpectedVersion.Any,
-                _serializer.SerializeEventData(@event, processId, 0));
+            var streamId = GetStreamId(processId, bucketId);
+            var eventId = DeterministicEventIdGenerator.Generate(@event, 0, streamId, Guid.NewGuid());
+            var eventData = _serializer.SerializeEventData(@event, eventId);
+
+            return _connection.AppendToStreamAsync(streamId, ExpectedVersion.Any, eventData);
         }
 
-        private static string GetStreamName(string processId, string bucketId = null)
+        private static string GetStreamId(string processId, string bucketId = null)
         {
             return ("checkpoints-" + processId).FormatStreamIdWithBucket(bucketId);
         }

@@ -6,6 +6,7 @@
     using System.Reactive.Linq;
     using System.Reactive.Threading.Tasks;
     using System.Threading.Tasks;
+    using Cedar.Domain.Persistence;
     using Cedar.GetEventStore;
     using Cedar.GetEventStore.Handlers;
     using Cedar.GetEventStore.Serialization;
@@ -77,10 +78,13 @@
                         .ToTask()
                         .WithTimeout(TimeSpan.FromSeconds(5));
 
-                    await
-                        _connection.AppendToStreamAsync("events".FormatStreamIdWithBucket(),
-                            ExpectedVersion.Any,
-                            serializer.SerializeEventData(new TestEvent(), "events", 1));
+                    var @event = new TestEvent();
+
+                    var streamId = "events".FormatStreamIdWithBucket();
+                    var eventId = DeterministicEventIdGenerator.Generate(@event, 1, streamId, Guid.NewGuid());
+                    var eventData = serializer.SerializeEventData(@event, eventId);
+
+                    await _connection.AppendToStreamAsync(streamId, ExpectedVersion.Any, eventData);
 
                     await commitProjected;
 
@@ -117,10 +121,12 @@
                         .ToTask()
                         .WithTimeout(TimeSpan.FromSeconds(5));
 
-                    await
-                        _connection.AppendToStreamAsync("events",
-                            ExpectedVersion.Any,
-                            serializer.SerializeEventData(new TestEventThatThrows(), "events", 1));
+                    var @event = new TestEventThatThrows();
+                    var streamId = "events";
+                    var eventId = DeterministicEventIdGenerator.Generate(@event, 1, streamId, Guid.NewGuid());
+                    var eventData = serializer.SerializeEventData(@event, eventId);
+
+                    await _connection.AppendToStreamAsync(streamId, ExpectedVersion.Any,eventData);
 
                     Func<Task> act = async () => await commitProjected;
 

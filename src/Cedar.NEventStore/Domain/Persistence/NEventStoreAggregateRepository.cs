@@ -30,11 +30,11 @@ namespace Cedar.Domain.Persistence
             {
                 return Task.FromResult(default(TAggregate));
             }
-            IAggregate aggregate = CreateAggregate<TAggregate>(id);
+            TAggregate aggregate = CreateAggregate<TAggregate>(id);
             var streamHead = ApplyEventsToAggregate(commits, aggregate);
             _streamHeads.AddOrUpdate(Tuple.Create(bucketId, id), streamHead, (key, _) => streamHead);
             //TODO NES 6 async support
-            return Task.FromResult(aggregate as TAggregate);
+            return Task.FromResult(aggregate);
         }
 
         public override Task Save(
@@ -54,10 +54,15 @@ namespace Cedar.Domain.Persistence
                     streamHead = 1;
                 }
 
+
                 var commitAttempt = new CommitAttempt(bucketId, aggregate.Id, streamHead, commitId, aggregate.Version, DateTime.UtcNow, headers,
-                    aggregate.GetUncommittedEvents().Select(@event => new EventMessage
+                    aggregate.TakeUncommittedEvents().Select(@event => new EventMessage
                     {
-                        Body = @event
+                        Body = @event,
+                       /* Headers = new Dictionary<string, object>()
+                        {
+                            "EventId", 
+                        }*/
                     }));
 
                 try
@@ -65,7 +70,6 @@ namespace Cedar.Domain.Persistence
                     //TODO NES 6 async support
                     //await stream.CommitChanges(commitId).NotOnCapturedContext()
                     _eventStore.Advanced.Commit(commitAttempt);
-                    aggregate.ClearUncommittedEvents();
                     return Task.FromResult(0);
                 }
                 catch(DuplicateCommitException)
@@ -90,13 +94,14 @@ namespace Cedar.Domain.Persistence
             foreach (var commit in commits)
             {
                 lastStreamRevision = commit.StreamRevision;
-                foreach(var eventMessage in commit.Events)
+                using (var rehydrateAggregate = aggregate.BeginRehydrate())
                 {
-                    aggregate.ApplyEvent(eventMessage.Body);
+                    foreach(var eventMessage in commit.Events)
+                    {
+                        rehydrateAggregate.ApplyEvent(eventMessage.Body);
+                    }
                 }
             }
-
-            aggregate.ClearUncommittedEvents();
 
             return lastStreamRevision;
         }

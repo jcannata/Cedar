@@ -1,5 +1,6 @@
 namespace Cedar.Domain
 {
+    using System;
     using System.Collections.Generic;
 
     public interface IAggregate
@@ -8,10 +9,15 @@ namespace Cedar.Domain
 
         int Version { get; }
 
+        int OriginalVersion { get; }
+
+        IRehydrateAggregate BeginRehydrate();
+
+        IReadOnlyCollection<IUncommittedEvent> TakeUncommittedEvents();
+    }
+
+    public interface IRehydrateAggregate : IDisposable
+    {
         void ApplyEvent(object @event);
-
-        IReadOnlyCollection<object> GetUncommittedEvents();
-
-        void ClearUncommittedEvents();
     }
 }

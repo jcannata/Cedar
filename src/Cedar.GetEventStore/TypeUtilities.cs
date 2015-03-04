@@ -6,12 +6,8 @@ namespace Cedar.GetEventStore
 
     internal static class TypeUtilities
     {
-        public static string ToPartiallyQualifiedName(this Type type)
+        internal static string ToPartiallyQualifiedName(this Type type)
         {
-            if (type.IsGenericTypeDefinition)
-            {
-                throw new ArgumentException("Open generic types are not allowed.", "type");
-            }
             var sb = new StringBuilder();
             sb.Append(type.FullName);
             if (type.IsGenericType)

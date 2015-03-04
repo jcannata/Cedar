@@ -7,10 +7,10 @@ namespace Cedar.Domain
 
     public abstract class AggregateBase : IAggregate, IEquatable<IAggregate>
     {
-        private readonly List<object> _uncommittedEvents = new List<object>();
-        private readonly IEventRouter _registeredRoutes;
-        private int _version;
         private readonly string _id;
+        private readonly IEventRouter _registeredRoutes;
+        private readonly List<IUncommittedEvent> _uncommittedEvents = new List<IUncommittedEvent>();
+        private int _originalVersion;
 
         protected AggregateBase(string id)
             : this(id, new ConventionEventRouter())
@@ -31,30 +31,35 @@ namespace Cedar.Domain
             get { return _id; }
         }
 
-        public int Version
+        public int Version { get; private set; }
+
+        IRehydrateAggregate IAggregate.BeginRehydrate()
         {
-            get { return _version; }
+            return new RehydrateAggregate(this);
         }
 
-        void IAggregate.ApplyEvent(object @event)
+        int IAggregate.OriginalVersion
         {
-            _registeredRoutes.Dispatch(@event);
-            _version++;
+            get { return _originalVersion; }
         }
 
-        IReadOnlyCollection<object> IAggregate.GetUncommittedEvents()
+        IReadOnlyCollection<IUncommittedEvent> IAggregate.TakeUncommittedEvents()
         {
-            return new ReadOnlyCollection<object>(_uncommittedEvents);
-        }
-
-        void IAggregate.ClearUncommittedEvents()
-        {
+            var uncommittedEvents = new ReadOnlyCollection<IUncommittedEvent>(_uncommittedEvents.ToArray());
             _uncommittedEvents.Clear();
+            _originalVersion = Version;
+            return uncommittedEvents;
         }
 
         public bool Equals(IAggregate other)
         {
             return null != other && other.Id == Id;
+        }
+
+        private void ApplyEvent(object @event)
+        {
+            _registeredRoutes.Dispatch(@event);
+            Version++;
         }
 
         protected void Register<T>(Action<T> route)
@@ -64,8 +69,8 @@ namespace Cedar.Domain
 
         protected void RaiseEvent(object @event)
         {
-            ((IAggregate) this).ApplyEvent(@event);
-            _uncommittedEvents.Add(@event);
+            ApplyEvent(@event);
+            _uncommittedEvents.Add(new UncommittedEvent(Guid.NewGuid(), Version, @event));
         }
 
         public override int GetHashCode()
@@ -76,6 +81,55 @@ namespace Cedar.Domain
         public override bool Equals(object obj)
         {
             return Equals(obj as IAggregate);
+        }
+
+        private class RehydrateAggregate : IRehydrateAggregate
+        {
+            private readonly AggregateBase _aggregateBase;
+
+            public RehydrateAggregate(AggregateBase aggregateBase)
+            {
+                _aggregateBase = aggregateBase;
+            }
+
+            public void Dispose()
+            {
+                _aggregateBase._originalVersion = _aggregateBase.Version;
+            }
+
+            public void ApplyEvent(object @event)
+            {
+                _aggregateBase.ApplyEvent(@event);
+            }
+        }
+
+        private class UncommittedEvent : IUncommittedEvent
+        {
+            private readonly object _event;
+            private readonly Guid _eventId;
+            private readonly int _version;
+
+            public UncommittedEvent(Guid eventId, int version, object @event)
+            {
+                _eventId = eventId;
+                _version = version;
+                _event = @event;
+            }
+
+            public Guid EventId
+            {
+                get { return _eventId; }
+            }
+
+            public int Version
+            {
+                get { return _version; }
+            }
+
+            public object Event
+            {
+                get { return _event; }
+            }
         }
     }
 }
