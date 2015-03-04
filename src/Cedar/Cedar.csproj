@@ -53,6 +53,7 @@
     <Compile Include="Domain\AggregateBase.cs" />
     <Compile Include="Domain\AggregateExtensions.cs" />
     <Compile Include="Domain\ConventionEventRouter.cs" />
+    <Compile Include="Domain\IRehydrateAggregate.cs" />
     <Compile Include="Domain\IUncommittedEvent.cs" />
     <Compile Include="Domain\Persistence\CreateAggregate.cs" />
     <Compile Include="Domain\DefaultConflictDetector.cs" />

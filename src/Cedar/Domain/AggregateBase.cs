@@ -3,6 +3,7 @@ namespace Cedar.Domain
     using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
+    using Cedar.Domain.Persistence;
     using EnsureThat;
 
     public abstract class AggregateBase : IAggregate, IEquatable<IAggregate>
@@ -69,8 +70,13 @@ namespace Cedar.Domain
 
         protected void RaiseEvent(object @event)
         {
+            if(@event == null)
+            {
+                return;
+            }
             ApplyEvent(@event);
-            _uncommittedEvents.Add(new UncommittedEvent(Guid.NewGuid(), Version, @event));
+            var eventId = DeterministicEventIdGenerator.Generate(@event, _id, Version);
+            _uncommittedEvents.Add(new UncommittedEvent(eventId, Version, @event));
         }
 
         public override int GetHashCode()

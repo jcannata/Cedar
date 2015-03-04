@@ -80,6 +80,17 @@
             ((IAggregate)aggregate).OriginalVersion.Should().Be(1);
         }
 
+        [Fact]
+        public void When_raising_null_event_then_should_have_no_uncommitted_events()
+        {
+            var aggregate = new Aggregate("id");
+            aggregate.CommandThatDoesNothing();
+
+            var uncommittedEvents = ((IAggregate)aggregate).TakeUncommittedEvents();
+
+            uncommittedEvents.Count.Should().Be(0);
+        }
+
         private class EventThatHasAnApply
         {}
 
@@ -100,6 +111,11 @@
             public void Command()
             {
                 RaiseEvent(new EventThatDoesNotHaveAnApply());
+            }
+
+            public void CommandThatDoesNothing()
+            {
+                RaiseEvent(null);
             }
 
             private void Apply(EventThatHasAnApply @event) { }
