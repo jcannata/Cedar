@@ -45,7 +45,7 @@
 
         public string FileExtension
         {
-            get { return String.Empty; }
+            get { return string.Empty; }
         }
     }
 }

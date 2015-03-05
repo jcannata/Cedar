@@ -11,7 +11,7 @@
             if(false == result is TException)
             {
                 throw new ScenarioException(
-                    String.Format(
+                    string.Format(
                         "Expected results to be {0}, got {1} instead.",
                         typeof(TException).FullName,
                         result == null
@@ -29,18 +29,18 @@
         {
             if (occurredException == null)
             {
-                throw new ScenarioException(String.Format("{0} was expected yet no exception ocurred.", typeof(TException).FullName));
+                throw new ScenarioException(string.Format("{0} was expected yet no exception ocurred.", typeof(TException).FullName));
             }
 
             if (false == occurredException is TException)
             {
-                throw new ScenarioException(String.Format("{0} was expected yet {1} ocurred.", typeof(TException).FullName,
+                throw new ScenarioException(string.Format("{0} was expected yet {1} ocurred.", typeof(TException).FullName,
                         occurredException.GetType().FullName));
             }
 
             if (false == isMatch((TException)occurredException))
             {
-                throw new ScenarioException(String.Format("The expected exception type occurred but it did not match the expectation."));
+                throw new ScenarioException(string.Format("The expected exception type occurred but it did not match the expectation."));
             }
         }
     }

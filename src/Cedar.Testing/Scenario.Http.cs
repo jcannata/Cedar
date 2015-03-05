@@ -76,7 +76,7 @@
             {
                 var flattenedHeaders =
                     (from headers in
-                        _request.Headers.Union((_request.Content ?? new StringContent(String.Empty)).Headers)
+                        _request.Headers.Union((_request.Content ?? new StringContent(string.Empty)).Headers)
                         let values = headers.Value
                         from value in values
                         select new { key = headers.Key, value });
@@ -110,7 +110,7 @@
                 public HeaderCollection(HttpRequestMessage request)
                 {
                     _headers = request.Headers;
-                    _contentHeaders = (request.Content ?? new StringContent(String.Empty)).Headers;
+                    _contentHeaders = (request.Content ?? new StringContent(string.Empty)).Headers;
                 }
 
                 public HttpHeaderValueCollection<WarningHeaderValue> Warning
@@ -377,7 +377,7 @@
             {
                 var flattenedHeaders =
                     (from headers in
-                        _response.Headers.Union((_response.Content ?? new StringContent(String.Empty)).Headers)
+                        _response.Headers.Union((_response.Content ?? new StringContent(string.Empty)).Headers)
                         let values = headers.Value
                         from value in values
                         select new { key = headers.Key, value });
@@ -412,7 +412,7 @@
                 public HeaderCollection(HttpResponseMessage response)
                 {
                     _headers = response.Headers;
-                    _contentHeaders = (response.Content ?? new StringContent(String.Empty)).Headers;
+                    _contentHeaders = (response.Content ?? new StringContent(string.Empty)).Headers;
                 }
 
                 public HttpHeaderValueCollection<string> AcceptRanges

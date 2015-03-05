@@ -11,7 +11,7 @@ namespace Cedar.GetEventStore
 
             bucketId = string.IsNullOrWhiteSpace(bucketId) ? "default" : bucketId;
 
-            return String.Format("[{0}].{1}", bucketId, streamId);
+            return string.Format("[{0}].{1}", bucketId, streamId);
         }
 
         public static string FormatStreamNameWithoutBucket(this string streamId)
@@ -22,7 +22,7 @@ namespace Cedar.GetEventStore
 
             if(split.Length < 2)
             {
-                throw new ArgumentException(String.Format("Expected {0} to be prefixed with a bucket.", streamId), "streamId");
+                throw new ArgumentException(string.Format("Expected {0} to be prefixed with a bucket.", streamId), "streamId");
             }
 
             return split[1];

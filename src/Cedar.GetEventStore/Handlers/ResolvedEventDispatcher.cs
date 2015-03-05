@@ -126,7 +126,7 @@
 
             _subscription = _streamId == null 
                 ? SubscribeToAllFrom(checkpointToken.ParsePosition()) 
-                : SubscribeToStreamFrom(checkpointToken == null ? default(int?) : Int32.Parse(checkpointToken));
+                : SubscribeToStreamFrom(checkpointToken == null ? default(int?) : int.Parse(checkpointToken));
         }
 
         private EventStoreCatchUpSubscription SubscribeToStreamFrom(int? lastCheckpoint)

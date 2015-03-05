@@ -26,7 +26,7 @@
                     throw new ArgumentException();
                 }
 
-                position = new Position(Int64.Parse(positions[0]), Int64.Parse(positions[1]));
+                position = new Position(long.Parse(positions[0]), long.Parse(positions[1]));
             }
             return position;
         }

@@ -90,7 +90,7 @@
                 var results = item.Item2;
 
                 await _output.WriteLineAsync(
-                        String.Format(
+                        string.Format(
                             "<li><a href='#{0}'>{1}</a> ({2})</li>",
                             categoryId, categoryName, results.All(result => result.Passed) ? "PASSED" : "FAILED"));
             }
@@ -118,7 +118,7 @@
 
         private async Task WriteResult(ScenarioResult result)
         {
-            await _output.WriteLineAsync(String.Format("<div class='alert alert-{0}'>", result.Passed ? "success" : "danger"));
+            await _output.WriteLineAsync(string.Format("<div class='alert alert-{0}'>", result.Passed ? "success" : "danger"));
             await _output.WriteLineAsync("<details id='{0}'>");
             await _output.WriteLineAsync("<summary>" + (result.Name ?? "???").Underscore().Titleize() + " - " + (result.Passed ? "Passed" : "Failed") + "</summary>");
             await _output.WriteLineAsync("<pre>");
@@ -133,8 +133,8 @@
 
         private async Task WriteCategoryHeader(Type foundOn)
         {
-            await _output.WriteLineAsync(String.Format("<section id='{0}'>", foundOn.GetCategoryId()));
-            await _output.WriteLineAsync(String.Format("<h1>{0}</h1>", foundOn.GetCategoryName()));
+            await _output.WriteLineAsync(string.Format("<section id='{0}'>", foundOn.GetCategoryId()));
+            await _output.WriteLineAsync(string.Format("<h1>{0}</h1>", foundOn.GetCategoryName()));
         }
 
         private async Task WriteCategoryFooter()

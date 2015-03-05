@@ -95,7 +95,7 @@
                     {
                         if (false == instance.Equals(other))
                         {
-                            throw new ScenarioException(String.Format("{0} was expected to equal {1}.", instance, other));
+                            throw new ScenarioException(string.Format("{0} was expected to equal {1}.", instance, other));
                         }
                     }; 
                     

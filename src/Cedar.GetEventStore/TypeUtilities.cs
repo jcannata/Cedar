@@ -14,7 +14,7 @@ namespace Cedar.GetEventStore
             {
                 sb.Append("[");
 
-                sb.Append(String.Join(", ",
+                sb.Append(string.Join(", ",
                     type.GetGenericArguments()
                         .Select(g => "[" + ToPartiallyQualifiedName(g) + "]")
                         .ToArray()));

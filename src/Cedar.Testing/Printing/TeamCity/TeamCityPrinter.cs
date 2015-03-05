@@ -10,31 +10,31 @@
 
         private static string Started(string name)
         {
-            return String.Format(TeamCityServiceMessageFormat, "testStarted", String.Format("name='{0}'", name));
+            return string.Format(TeamCityServiceMessageFormat, "testStarted", string.Format("name='{0}'", name));
         }
 
         private static string Failed(string name, Exception exception = null)
         {
             exception = exception ?? new Exception();
-            return String.Format(TeamCityServiceMessageFormat, "testFailed",
-                String.Format("name='{0}' message='{1}' details='{2}'", name, FormatNewLines(exception.Message), FormatNewLines(exception)));
+            return string.Format(TeamCityServiceMessageFormat, "testFailed",
+                string.Format("name='{0}' message='{1}' details='{2}'", name, FormatNewLines(exception.Message), FormatNewLines(exception)));
         }
 
         private static string Finished(string name, TimeSpan? duration)
         {
-            return String.Format(TeamCityServiceMessageFormat, "testFinished",
-                String.Format("name='{0}' duration='{1}'", name,
+            return string.Format(TeamCityServiceMessageFormat, "testFinished",
+                string.Format("name='{0}' duration='{1}'", name,
                     duration.HasValue ? (int) duration.Value.TotalMilliseconds : -1));
         }
 
         private static string SuiteStarted(string name)
         {
-            return String.Format(TeamCityServiceMessageFormat, "testSuiteStarted", String.Format("name='{0}'", name));
+            return string.Format(TeamCityServiceMessageFormat, "testSuiteStarted", string.Format("name='{0}'", name));
         }
 
         private static string SuiteFinished(string name)
         {
-            return String.Format(TeamCityServiceMessageFormat, "testSuiteFinished", String.Format("name='{0}'", name));
+            return string.Format(TeamCityServiceMessageFormat, "testSuiteFinished", string.Format("name='{0}'", name));
         }
 
         private static string FormatNewLines(object text)

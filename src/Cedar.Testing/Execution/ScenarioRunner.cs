@@ -103,7 +103,7 @@ namespace Cedar.Testing.Execution
 
         private TextWriter OutputFactory(string fileExtension)
         {
-            if (String.IsNullOrWhiteSpace(_output))
+            if (string.IsNullOrWhiteSpace(_output))
                 return new NonClosingTextWriter(Console.Out);
 
             var outputFile = GetOutputWithExtension(fileExtension);
@@ -113,7 +113,7 @@ namespace Cedar.Testing.Execution
 
         private string GetOutputWithExtension(string fileExtension)
         {
-            if(String.IsNullOrWhiteSpace(_output))
+            if(string.IsNullOrWhiteSpace(_output))
             {
                 throw new InvalidOperationException();
             }
