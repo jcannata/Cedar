@@ -134,7 +134,7 @@
 
                     _runThen = aggregate =>
                     {
-                        // Throw if an exception has occure in When
+                        // Throw if an exception has occured in When
                         var exception = _results as Exception;
                         if(exception != null)
                         {
