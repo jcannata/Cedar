@@ -115,6 +115,7 @@
     <Compile Include="Projections\NEventStoreProjectionDispatcher.cs" />
     <Compile Include="Projections\ProjectionTests.cs" />
     <Compile Include="Projections\TestProjectionDispatcher.cs" />
+    <Compile Include="Testing\Aggregate2Tests.cs" />
     <Compile Include="TestLogger.cs" />
     <Compile Include="DefaultGetEventStoreJsonSerializer.cs" />
     <Compile Include="Domain\AggregateTests.cs" />

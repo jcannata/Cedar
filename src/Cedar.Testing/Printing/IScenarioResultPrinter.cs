@@ -6,9 +6,11 @@
     public interface IScenarioResultPrinter : IDisposable
     {
         Task PrintCategoryFooter(Type foundOn);
+
         Task PrintCategoryHeader(Type foundOn);
+
         Task PrintResult(ScenarioResult result);
+
         Task Flush();
-        string FileExtension { get; }
     }
 }

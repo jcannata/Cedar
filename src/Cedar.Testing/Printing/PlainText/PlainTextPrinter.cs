@@ -11,9 +11,9 @@
         private readonly TextWriter _output;
         private bool _disposed;
 
-        public PlainTextPrinter(Func<string, TextWriter> factory)
+        public PlainTextPrinter(CreateTextWriter factory)
         {
-            _output = factory(FileExtension);
+            _output = factory("txt");
         }
 
         public async Task PrintResult(ScenarioResult result)
@@ -32,8 +32,6 @@
         {
             return _output.FlushAsync();
         }
-
-        public string FileExtension { get { return "txt"; } }
 
         private async Task WriteHeader(string scenarioName, TimeSpan? duration, bool passed)
         {

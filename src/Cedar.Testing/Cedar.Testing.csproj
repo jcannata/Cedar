@@ -125,12 +125,14 @@
     <Compile Include="MessageEqualityComparer.cs" />
     <Compile Include="OwinExtensions.cs" />
     <Compile Include="Printing\Bootstrap\BootstrapPrinter.cs" />
+    <Compile Include="Printing\CreateTextWriter.cs" />
     <Compile Include="Printing\Console\ConsolePrinter.cs" />
     <Compile Include="Printing\PrintingExtensions.cs" />
     <Compile Include="Printing\IScenarioResultPrinter.cs" />
     <Compile Include="Printing\Markdown\MarkdownPrinter.cs" />
     <Compile Include="Printing\PlainText\PlainTextPrinter.cs" />
     <Compile Include="Printing\TeamCity\TeamCityPrinter.cs" />
+    <Compile Include="Scenario.Aggregate2.cs" />
     <Compile Include="Scenario.Middleware.cs" />
     <Compile Include="Scenario.Query.cs" />
     <Compile Include="Scenario.cs" />
@@ -140,6 +142,7 @@
     <Compile Include="Scenario.Aggregate.cs" />
     <Compile Include="Scenario.ProcessManager.cs" />
     <Compile Include="ScenarioException.cs" />
+    <Compile Include="ScenarioException2.cs" />
     <Compile Include="ScenarioExtensions.cs" />
     <Compile Include="ScenarioResult.cs" />
   </ItemGroup>

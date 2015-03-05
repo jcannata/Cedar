@@ -13,9 +13,9 @@
         private bool _disposed;
         private readonly IList<Tuple<Type, List<ScenarioResult>>> _tableOfContents;
 
-        public BootstrapPrinter(Func<string, TextWriter> factory)
+        public BootstrapPrinter(CreateTextWriter createTextWriter)
         {
-            _output = factory(FileExtension);
+            _output = createTextWriter("html");
 
             _tableOfContents = new List<Tuple<Type, List<ScenarioResult>>>();
         }
@@ -49,11 +49,6 @@
             await _output.WriteLineAsync("</html>");
 
             await _output.FlushAsync();
-        }
-
-        public string FileExtension
-        {
-            get { return "html"; }
         }
 
         private async Task WriteHead()

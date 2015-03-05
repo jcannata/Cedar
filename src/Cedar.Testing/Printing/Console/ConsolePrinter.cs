@@ -1,7 +1,6 @@
 ﻿namespace Cedar.Testing.Printing.Console
 {
     using System;
-    using System.IO;
     using System.Threading.Tasks;
     using Cedar.Testing.Printing.PlainText;
 
@@ -10,7 +9,7 @@
         private readonly IScenarioResultPrinter _inner;
         private bool _disposed;
 
-        public ConsolePrinter(Func<string, TextWriter> _)
+        public ConsolePrinter(CreateTextWriter _ = null)
         {
             _inner = new PlainTextPrinter(file => Console.Out);
         }

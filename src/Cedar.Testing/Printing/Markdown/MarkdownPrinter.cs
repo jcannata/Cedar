@@ -11,9 +11,9 @@
         private readonly TextWriter _output;
         private bool _disposed;
 
-        public MarkdownPrinter(Func<string, TextWriter> factory)
+        public MarkdownPrinter(CreateTextWriter factory)
         {
-            _output = factory(FileExtension);
+            _output = factory("md");
         }
 
         public async Task PrintResult(ScenarioResult result)
@@ -32,8 +32,6 @@
         {
             return _output.FlushAsync();
         }
-
-        public string FileExtension { get { return "md"; } }
 
         private async Task WriteHeader(string scenarioName, TimeSpan? duration, bool passed)
         {
