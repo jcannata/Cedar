@@ -130,7 +130,6 @@
 
                 public void Then(params object[] expectedEvents)
                 {
-                    GuardThenNotSet();
                     _expect = expectedEvents;
 
                     _runThen = aggregate =>
@@ -162,7 +161,6 @@
 
                 public void ThenNothingHappened()
                 {
-                    GuardThenNotSet();
                     _expect = new object[0];
 
                     _runThen = aggregate =>
@@ -188,8 +186,6 @@
                 public void ThenShouldThrow<TException>(Expression<Func<TException, bool>> isMatch = null)
                     where TException : Exception
                 {
-                    GuardThenNotSet();
-
                     _expect = isMatch != null 
                         ? new object[] { typeof(TException), isMatch } 
                         : new object[] { typeof(TException) };
@@ -197,14 +193,6 @@
                     _runThen = _ => ((ScenarioResult)this).ThenShouldThrow(_results, isMatch);
 
                     Run();
-                }
-
-                private void GuardThenNotSet()
-                {
-                    if(_runThen != null)
-                    {
-                        throw new InvalidOperationException("Then already set.");
-                    }
                 }
 
                 private void Run()
