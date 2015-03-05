@@ -202,7 +202,7 @@
                 Task.Run(async () =>
                 {
                     ResolvedEvent resolvedEvent;
-                    while (false == _token.IsCancellationRequested && _events.TryDequeue(out resolvedEvent))
+                    while (!_token.IsCancellationRequested && _events.TryDequeue(out resolvedEvent))
                     {
                         try
                         {

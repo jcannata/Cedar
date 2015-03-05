@@ -43,7 +43,7 @@
             var aggregate = CreateAggregate<TAggregate>(id);
             ApplySlice(version, slice, aggregate);
 
-            while (false == slice.IsEndOfStream)
+            while (!slice.IsEndOfStream)
             {
                 slice = await _connection.ReadStreamEventsForwardAsync(streamId, slice.NextEventNumber, PageSize, false).NotOnCapturedContext();
                 ApplySlice(version, slice, aggregate);

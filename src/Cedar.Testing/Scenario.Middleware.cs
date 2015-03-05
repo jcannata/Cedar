@@ -128,8 +128,7 @@
 
                                 var stopwatch = Stopwatch.StartNew();
 
-                                while(response == null
-                                      || (false == canContinue(response)))
+                                while(response == null || !canContinue(response))
                                 {
                                     response = await client.SendAsync(request);
 
@@ -143,7 +142,7 @@
 
                                 _expect.Add(lastResponse);
 
-                                if(false == canContinue(lastResponse))
+                                if(!canContinue(lastResponse))
                                 {
                                     throw new ScenarioException("Timed out waiting for the response to match.");
                                 }
@@ -152,7 +151,7 @@
 
                                 (from assertion in assertions
                                     let result = assertion.Compile()(lastResponse)
-                                    where false == result
+                                    where !result
                                     select assertion).ScenarioFailedIfAny();
                             }
 

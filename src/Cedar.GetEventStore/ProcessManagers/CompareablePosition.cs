@@ -16,17 +16,17 @@ namespace Cedar.GetEventStore.ProcessManagers
         public int CompareTo(string other)
         {
             var otherPosition = other.ParsePosition();
-            if (false ==_position.HasValue && false == otherPosition.HasValue)
+            if (!_position.HasValue && !otherPosition.HasValue)
             {
                 return 0;
             }
 
-            if(false == _position.HasValue)
+            if(!_position.HasValue)
             {
                 return -1;
             }
 
-            if(false == otherPosition.HasValue)
+            if(!otherPosition.HasValue)
             {
                 return 1;
             }

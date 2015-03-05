@@ -140,15 +140,15 @@ namespace Cedar.ProcessManagers
 
             public IEnumerable<Handler<TMessage>> ResolveAll<TMessage>() where TMessage : class
             {
-                if(false == typeof(EventMessage).GetTypeInfo().IsAssignableFrom(typeof(TMessage).GetTypeInfo())
-                   || false == _byCorrelationId.ContainsKey(typeof(TMessage)))
+                if(!typeof(EventMessage).GetTypeInfo().IsAssignableFrom(typeof(TMessage).GetTypeInfo())
+                   || !_byCorrelationId.ContainsKey(typeof(TMessage)))
                 {
                     yield break;
                 }
                 yield return async (message, ct) =>
                 {
                     Func<object, string> getCorrelationId;
-                    if(false == _byCorrelationId.TryGetValue(typeof(TMessage), out getCorrelationId))
+                    if(!_byCorrelationId.TryGetValue(typeof(TMessage), out getCorrelationId))
                     {
                         return;
                     }
@@ -171,7 +171,7 @@ namespace Cedar.ProcessManagers
 
                     var commands = process.Commands.ToList();
 
-                    if(false == commands.Any())
+                    if(!commands.Any())
                     {
                         return;
                     }
@@ -185,7 +185,7 @@ namespace Cedar.ProcessManagers
             private async Task<CheckpointedProcess> GetProcess(string correlationId, CancellationToken ct)
             {
                 CheckpointedProcess checkpointedProcess;
-                if(false == _activeProcesses.TryGetValue(correlationId, out checkpointedProcess))
+                if(!_activeProcesses.TryGetValue(correlationId, out checkpointedProcess))
                 {
                     var process = (TProcess) _processManagerFactory
                         .Build(typeof(TProcess), _buildProcessId(correlationId), correlationId);

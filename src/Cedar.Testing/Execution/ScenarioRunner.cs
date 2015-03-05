@@ -86,7 +86,7 @@ namespace Cedar.Testing.Execution
 
         private static async Task<Assembly> LoadTestAssembly(string assembly)
         {
-            if(false == Path.HasExtension(assembly))
+            if(!Path.HasExtension(assembly))
             {
                 assembly = assembly + ".dll";
             }
@@ -164,7 +164,7 @@ namespace Cedar.Testing.Execution
         {
             return (from assembly in AppDomain.CurrentDomain.GetAssemblies()
                     from type in assembly.GetTypes()
-                    where type.IsClass && false == type.IsAbstract && typeof(IScenarioResultPrinter).IsAssignableFrom(type)
+                    where type.IsClass && !type.IsAbstract && typeof(IScenarioResultPrinter).IsAssignableFrom(type)
                     let constructor = type.GetConstructor(new[] { typeof(Func<string, TextWriter>) })
                     where constructor != null
                     select new

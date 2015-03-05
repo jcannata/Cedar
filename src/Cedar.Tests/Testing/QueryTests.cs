@@ -72,7 +72,7 @@
                     {
                         var context = new OwinContext(env);
 
-                        if(false == context.Request.Path.StartsWithSegments(new PathString("/query-response")))
+                        if(!context.Request.Path.StartsWithSegments(new PathString("/query-response")))
                         {
                             await next(env);
                             return;

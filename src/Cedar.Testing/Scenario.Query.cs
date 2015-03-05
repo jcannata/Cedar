@@ -100,7 +100,7 @@
                         
                         var didNotPass = from assertion in _assertions
                             let result = assertion.Compile()(response)
-                            where false == result
+                            where !result
                             select assertion;
 
                         didNotPass.ScenarioFailedIfAny();

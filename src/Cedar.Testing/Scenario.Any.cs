@@ -93,7 +93,7 @@
 
                     _runThen = instance =>
                     {
-                        if (false == instance.Equals(other))
+                        if (!instance.Equals(other))
                         {
                             throw new ScenarioException(string.Format("{0} was expected to equal {1}.", instance, other));
                         }

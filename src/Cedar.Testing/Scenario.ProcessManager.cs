@@ -192,7 +192,7 @@
                     
                     _checkCommands = process =>
                     {
-                        if (false == process.Commands
+                        if (!process.Commands
                             .SequenceEqual(commands, MessageEqualityComparer.Instance))
                         {
                             throw new ScenarioException(
@@ -230,7 +230,7 @@
                     _checkEvents = process =>
                     {
                         var enumerable = process.Events.ToEnumerable().ToList();
-                        if (false == enumerable.SequenceEqual(events, MessageEqualityComparer.Instance))
+                        if (!enumerable.SequenceEqual(events, MessageEqualityComparer.Instance))
                         {
                             throw new ScenarioException("The ocurred events did not equal the expected events.");
                         }

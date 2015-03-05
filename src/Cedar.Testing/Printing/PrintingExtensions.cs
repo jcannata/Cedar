@@ -33,7 +33,7 @@ namespace Cedar.Testing.Printing
 
             var enumerable = target as IEnumerable;
 
-            if(enumerable != null && false == target is IQueryable)
+            if(enumerable != null && !(target is IQueryable))
             {
                 return NicePrintEnumerable(enumerable, prefix);
             }

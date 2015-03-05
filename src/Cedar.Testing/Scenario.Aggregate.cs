@@ -134,7 +134,7 @@
                         
                         _results = uncommittedEvents;
                         
-                        if (false == uncommittedEvents.SequenceEqual(expectedEvents, MessageEqualityComparer.Instance))
+                        if (!uncommittedEvents.SequenceEqual(expectedEvents, MessageEqualityComparer.Instance))
                         {
                             throw new ScenarioException(
                                 string.Format(

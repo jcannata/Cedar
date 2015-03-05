@@ -8,7 +8,7 @@
         private static void ThenShouldThrow<TException>(this ScenarioResult scenario, object result, Expression<Func<TException, bool>> isMatch = null)
             where TException : Exception
         {
-            if(false == result is TException)
+            if(!(result is TException))
             {
                 throw new ScenarioException(
                     string.Format(
@@ -32,13 +32,13 @@
                 throw new ScenarioException(string.Format("{0} was expected yet no exception ocurred.", typeof(TException).FullName));
             }
 
-            if (false == occurredException is TException)
+            if (!(occurredException is TException))
             {
                 throw new ScenarioException(string.Format("{0} was expected yet {1} ocurred.", typeof(TException).FullName,
                         occurredException.GetType().FullName));
             }
 
-            if (false == isMatch((TException)occurredException))
+            if (!isMatch((TException)occurredException))
             {
                 throw new ScenarioException(string.Format("The expected exception type occurred but it did not match the expectation."));
             }

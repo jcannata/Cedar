@@ -84,7 +84,7 @@
         {
             await _output.WriteLineAsync(Started(result.Name));
 
-            if (false == result.Passed)
+            if (!result.Passed)
             {
                 await _output.WriteLineAsync(Failed(result.Name, result.Results as Exception));
             }

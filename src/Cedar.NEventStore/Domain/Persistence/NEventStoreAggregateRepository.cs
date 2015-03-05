@@ -47,7 +47,7 @@ namespace Cedar.Domain.Persistence
             Dictionary<string, object> headers = PrepareHeaders(aggregate, updateHeaders);
             int streamHead;
 
-            if (false == _streamHeads.TryGetValue(Tuple.Create(bucketId, aggregate.Id), out streamHead))
+            if (!_streamHeads.TryGetValue(Tuple.Create(bucketId, aggregate.Id), out streamHead))
             {
                 streamHead = 1;
             }

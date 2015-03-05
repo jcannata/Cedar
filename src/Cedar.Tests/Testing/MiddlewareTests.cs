@@ -124,7 +124,7 @@
                         return;
                     }
 
-                    if(false == resources.TryGetValue(id, out resource))
+                    if(!resources.TryGetValue(id, out resource))
                     {
                         return;
                     }
