@@ -1,7 +1,6 @@
 ﻿namespace Cedar.Testing
 {
     using System;
-    using System.Collections.Generic;
     using System.Diagnostics;
     using System.Linq;
     using System.Linq.Expressions;
@@ -131,7 +130,7 @@
 
                     _runThen = aggregate =>
                     {
-                        var uncommittedEvents = new List<object>(aggregate.TakeUncommittedEvents().Select(e => e.Event));
+                        var uncommittedEvents = aggregate.TakeUncommittedEvents().Select(e => e.Event);
                         
                         _results = uncommittedEvents;
                         
@@ -158,7 +157,7 @@
 
                     _runThen = aggregate =>
                     {
-                        var uncommittedEvents = new List<object>(aggregate.TakeUncommittedEvents().Select(e => e.Event));
+                        var uncommittedEvents = aggregate.TakeUncommittedEvents().Select(e => e.Event);
                         
                         _results = uncommittedEvents;
                         
