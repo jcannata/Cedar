@@ -16,15 +16,15 @@
     public static partial class Scenario
     {
         public static Aggregate2.IGiven<T> ForAggregate2<T>(
-            Func<string, T> factory = null,
+            Func<string, T> createAggregate = null,
             string aggregateId = null,
             [CallerMemberName] string scenarioName = null)
             where T : IAggregate
         {
             aggregateId = aggregateId ?? "testid";
-            factory = factory ?? (id => (T)DefaultCreateAggregate.Create(typeof (T), id));
+            createAggregate = createAggregate ?? (id => (T)DefaultCreateAggregate.Create(typeof (T), id));
 
-            return new Aggregate2.ScenarioBuilder<T>(factory, aggregateId, scenarioName);
+            return new Aggregate2.ScenarioBuilder<T>(createAggregate, aggregateId, scenarioName);
         }
 
         public static class Aggregate2
@@ -35,7 +35,7 @@
                 IWhen<T> Given(params object[] events);
             }
 
-            public interface IWhen<T> : IThen
+            public interface IWhen<T>
                 where T : IAggregate
             {
                 IThen When(Expression<Func<T, Task>> when);
@@ -55,7 +55,7 @@
                     where TException : Exception;
             }
 
-            internal class ScenarioBuilder<T> : IGiven<T>
+            internal class ScenarioBuilder<T> : IGiven<T>, IThen
                 where T : IAggregate
             {
                 private Func<string, T> _createAggregate;
@@ -92,11 +92,6 @@
 
                         _afterGiven(aggregate);
                     };
-                    _runWhen = _ =>
-                    {
-                        throw new ScenarioException("When not set.");
-                    };
-
                     _timer = new Stopwatch();
                 }
 
@@ -140,21 +135,26 @@
 
                     _runThen = aggregate =>
                     {
+                        // Throw if an exception has occure in When
+                        var exception = _results as Exception;
+                        if(exception != null)
+                        {
+                            ExceptionDispatchInfo.Capture(exception).Throw();
+                        }
+
                         var uncommittedEvents = aggregate.TakeUncommittedEvents().Select(e => e.Event);
-                        
                         _results = uncommittedEvents;
-                        
                         if (!uncommittedEvents.SequenceEqual(expectedEvents, MessageEqualityComparer.Instance))
                         {
-                            throw new ScenarioException(
-                                string.Format(
-                                    "The ocurred events ({0}) did not equal the expected events ({1}).",
-                                    uncommittedEvents.NicePrint()
-                                        .Aggregate(new StringBuilder(), (builder, s) => builder.Append(s))
-                                        .ToString(),
-                                    _expect.NicePrint()
-                                        .Aggregate(new StringBuilder(), (builder, s) => builder.Append(s))
-                                        .ToString()));
+                            var message = string.Format(
+                                "The ocurred events ({0}) did not equal the expected events ({1}).",
+                                uncommittedEvents.NicePrint()
+                                    .Aggregate(new StringBuilder(), (builder, s) => builder.Append(s))
+                                    .ToString(),
+                                _expect.NicePrint()
+                                    .Aggregate(new StringBuilder(), (builder, s) => builder.Append(s))
+                                    .ToString());
+                            throw new ScenarioException2(message, scenarioResult: this);
                         }
                     };
                     Run();
@@ -167,13 +167,18 @@
 
                     _runThen = aggregate =>
                     {
+                        // Throw if an exception has occure in When
+                        var exception = _results as Exception;
+                        if (exception != null)
+                        {
+                            ExceptionDispatchInfo.Capture(exception).Throw();
+                        }
+
                         var uncommittedEvents = aggregate.TakeUncommittedEvents().Select(e => e.Event);
-                        
                         _results = uncommittedEvents;
-                        
                         if (uncommittedEvents.Any())
                         {
-                            throw new ScenarioException("No events were expected, yet some events occurred.");
+                            throw new ScenarioException2("No events were expected, yet some events occurred.", scenarioResult: this);
                         }
                     };
 
@@ -210,63 +215,35 @@
 
                         try
                         {
-                            T aggregate;
+                            // An exceptions in create, given should be thrown as-is. They usually indicate a setup problem
+                            // and not a scenario / behaviour problem
+                            var aggregate = _createAggregate(_aggregateId);
+                            _runGiven(aggregate);
 
-                            try
-                            {
-                                aggregate = _createAggregate(_aggregateId);
-                            }
-                            catch(Exception ex)
-                            {
-                                throw new ScenarioException2(
-                                    "Exception occured creating aggregate. See inner exception for details.",
-                                    ex,
-                                    this);
-                            }
-
-                            try
-                            {
-                                _runGiven(aggregate);
-                            }
-                            catch(Exception ex)
-                            {
-                                throw new ScenarioException2(
-                                    "Exception occured executing Given. See inner exception for details.",
-                                    ex,
-                                    this);
-                            }
-
+                            // Exceptions in when and then will be captured and wrapped in scenario exception as these
+                            // do mean a scenario / behavior problem.
                             try
                             {
                                 await _runWhen(aggregate);
                             }
-                            catch(Exception ex)
+                            catch (Exception ex)
                             {
                                 _results = ex;
-                                throw new ScenarioException2(
-                                    "Exception occured executing When. See inner exception for details.",
-                                    ex,
-                                    this);
-                            }
-
-                            if(_runThen == null)
-                            {
-                                throw new ScenarioException2("Then not set.");
                             }
 
                             try
                             {
-                                await _runWhen(aggregate);
+                                _runThen(aggregate);
                             }
                             catch(Exception ex)
                             {
                                 _results = ex;
-                                throw new ScenarioException2(
+                                var scenarioException = new ScenarioException2(
                                     "Exception occured executing Then. See inner exception for details.",
-                                    ex,
-                                    this);
+                                    ex, this);
+                                scenarioException.ScenarioResult.Print(new ConsolePrinter()).Wait();
+                                throw scenarioException;
                             }
-
                             _passed = true;
                         }
                         catch(ScenarioException2 ex)
@@ -274,10 +251,6 @@
                             ex.ScenarioResult.Print(new ConsolePrinter()).Wait();
                             throw;
                         }
-
-                        _timer.Stop();
-
-                        return this;
                     });
                     try
                     {
@@ -286,11 +259,7 @@
                     catch(AggregateException ex)
                     {
                         Console.WriteLine(ex.Message);
-                        ExceptionDispatchInfo.Capture(ex.Flatten()).Throw();
-                    }
-                    finally
-                    {
-                        _timer.Stop();
+                        ExceptionDispatchInfo.Capture(ex.InnerException).Throw();
                     }
                 }
 
