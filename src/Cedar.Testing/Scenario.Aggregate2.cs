@@ -165,7 +165,7 @@
 
                     _runThen = aggregate =>
                     {
-                        // Throw if an exception has occure in When
+                        // Throw if an exception has occured in When
                         var exception = _results as Exception;
                         if (exception != null)
                         {
@@ -229,7 +229,6 @@
                                 var scenarioException = new ScenarioException2(
                                     "Exception occured executing Then. See inner exception for details.",
                                     ex, this);
-                                scenarioException.ScenarioResult.Print(new ConsolePrinter()).Wait();
                                 throw scenarioException;
                             }
                             _passed = true;
@@ -246,7 +245,7 @@
                     }
                     catch(AggregateException ex)
                     {
-                        Console.WriteLine(ex.Message);
+                        Console.WriteLine(ex);
                         ExceptionDispatchInfo.Capture(ex.InnerException).Throw();
                     }
                 }
