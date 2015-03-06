@@ -31,8 +31,10 @@ task Compile {
 
 task RunTests -depends Compile {
     $xunitRunner = "$srcDir\packages\xunit.runners.1.9.2\tools\xunit.console.clr4.exe"
+    $reportDir = "$reportsDir\tests\"
+    EnsureDirectory $reportDir
 
-    .$xunitRunner "$srcDir\Cedar.Tests\bin\Release\Cedar.Tests.dll" /html "$reportsDir\xUnit\$project\index.html"
+    .$xunitRunner "$srcDir\Cedar.Tests\bin\Release\Cedar.Tests.dll" /html "$reportDir\index.html" /nunit "$reportDir\tests.xml"
 }
 
 task ILMerge -depends Compile {
@@ -90,5 +92,13 @@ task CreateNuGetPackages -depends ILMerge {
     $packageVersion
     gci $srcDir -Recurse -Include *.nuspec | % {
         exec { .$srcDir\.nuget\nuget.exe pack $_ -o $buildOutputDir -version $packageVersion }
+    }
+}
+
+function EnsureDirectory {
+    param($directory)
+
+    if(!(test-path $directory))	{
+        mkdir $directory
     }
 }

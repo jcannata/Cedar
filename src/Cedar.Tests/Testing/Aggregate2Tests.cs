@@ -98,7 +98,6 @@
             act.ShouldThrow<ScenarioException2>();
         }
 
-
         private class SomethingHappened
         {
             public override string ToString()
