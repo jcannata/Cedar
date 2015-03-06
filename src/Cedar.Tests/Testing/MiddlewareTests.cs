@@ -7,6 +7,7 @@
     using System.Net;
     using System.Net.Http;
     using System.Threading.Tasks;
+    using Cedar.Testing.Printing.Console;
     using Microsoft.Owin;
     using Xunit;
     using MidFunc = System.Func<System.Func<System.Collections.Generic.IDictionary<string, object>,
@@ -29,7 +30,9 @@
                 .ThenShould(response => response.StatusCode == HttpStatusCode.Created)
                 .When(response => new HttpRequestMessage(HttpMethod.Get, response.Headers.Location))
                 .ThenShould(response => response.StatusCode == HttpStatusCode.OK);
-            
+
+            result.Print(new ConsolePrinter()).Wait();
+
             Assert.True(result.Passed);
         }
 
@@ -44,6 +47,8 @@
                 .ThenShould(response => response.StatusCode == HttpStatusCode.Accepted)
                 .When(response => new HttpRequestMessage(HttpMethod.Get, response.Headers.Location))
                 .ThenShould(response => response.StatusCode == HttpStatusCode.OK);
+
+            result.Print(new ConsolePrinter()).Wait();
 
             Assert.False(result.Passed);
         }

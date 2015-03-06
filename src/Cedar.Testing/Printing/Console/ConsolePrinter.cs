@@ -1,6 +1,9 @@
 ﻿namespace Cedar.Testing.Printing.Console
 {
     using System;
+    using System.Diagnostics;
+    using System.IO;
+    using System.Text;
     using System.Threading.Tasks;
     using Cedar.Testing.Printing.PlainText;
 
@@ -12,6 +15,37 @@
         public ConsolePrinter(CreateTextWriter _ = null)
         {
             _inner = new PlainTextPrinter(file => Console.Out);
+        }
+
+        private class TraceTextWriter : TextWriter
+        {
+            public override Encoding Encoding
+            {
+                get { return Encoding.UTF8; }
+            }
+
+            public override void WriteLine(string value)
+            {
+                Trace.WriteLine(value);
+            }
+
+            public override Task WriteAsync(string value)
+            {
+                Trace.Write(value);
+                return Task.FromResult(0);
+            }
+
+            public override Task WriteLineAsync()
+            {
+                Trace.WriteLine("");
+                return Task.FromResult(0);
+            }
+
+            public override Task WriteLineAsync(string value)
+            {
+                Trace.WriteLine(value);
+                return Task.FromResult(0);
+            }
         }
 
         public void Dispose()

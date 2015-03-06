@@ -34,7 +34,11 @@ task RunTests -depends Compile {
     $reportDir = "$reportsDir\tests\"
     EnsureDirectory $reportDir
 
-    .$xunitRunner "$srcDir\Cedar.Tests\bin\Release\Cedar.Tests.dll" /html "$reportDir\index.html" /nunit "$reportDir\tests.xml"
+    .$xunitRunner "$srcDir\Cedar.Tests\bin\Release\Cedar.Tests.dll" /html "$reportDir\index.html" /xml "$reportDir\tests.xml"
+	
+	# Pretty-print the xml
+	[Reflection.Assembly]::LoadWithPartialName("System.Xml.Linq")
+	[System.Xml.Linq.XDocument]::Load("$reportDir\tests.xml").Save("$reportDir\tests.xml")
 }
 
 task ILMerge -depends Compile {

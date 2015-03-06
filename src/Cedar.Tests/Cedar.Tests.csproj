@@ -129,7 +129,6 @@
     <Compile Include="Testing\EnumerableTests.cs" />
     <Compile Include="Testing\MiddlewareTests.cs" />
     <Compile Include="Testing\QueryTests.cs" />
-    <Compile Include="Testing\ScenarioRunnerAcceptanceTests.cs" />
     <Compile Include="Testing\ValueObjectTests.cs" />
     <Compile Include="Handlers\HandlerModuleTests.cs" />
     <Compile Include="Handlers\DurableCommitDispatcherTests.cs" />
@@ -147,10 +146,6 @@
     <ProjectReference Include="..\Cedar.NEventStore\Cedar.NEventStore.csproj">
       <Project>{14571633-73be-40e4-993b-0ff82648cbec}</Project>
       <Name>Cedar.NEventStore</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Cedar.Testing.TestRunner\Cedar.Testing.TestRunner.csproj">
-      <Project>{1f46ea8e-aba0-4e6b-9418-e6494e80c72f}</Project>
-      <Name>Cedar.Testing.TestRunner</Name>
     </ProjectReference>
     <ProjectReference Include="..\Cedar.Testing\Cedar.Testing.csproj">
       <Project>{de625b35-8644-4f57-8aa0-2792f19ec435}</Project>
