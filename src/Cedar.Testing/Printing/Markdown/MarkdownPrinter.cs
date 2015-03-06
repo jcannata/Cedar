@@ -41,7 +41,7 @@
             await _output.WriteAsync(" - " + (passed ? "PASSED" : "FAILED"));
             await _output.WriteLineAsync(" (completed in "
                                          + (duration.HasValue
-                                             ? duration.Value.TotalMilliseconds + "ms"
+                                             ? (int)duration.Value.TotalMilliseconds + "ms"
                                              : "???")
                                          + ")");
             await _output.WriteLineAsync();
