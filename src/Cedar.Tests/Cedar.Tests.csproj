@@ -109,6 +109,8 @@
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Domain\Persistences\DefaultCreateAggregateTests.cs" />
+    <Compile Include="EventSourcing\EventStoreAcceptanceTests.cs" />
+    <Compile Include="EventSourcing\InMemoryEventStoreTests.cs" />
     <Compile Include="Handlers\HandlerResolverTests.cs" />
     <Compile Include="Projections\NEventStoreProjectionDispatcher.cs" />
     <Compile Include="Projections\ProjectionTests.cs" />

@@ -53,10 +53,14 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\Cedar.Tests\EventSourcing\EventStoreAcceptanceTests.cs">
+      <Link>EventSourcing\EventStoreAcceptanceTests.cs</Link>
+    </Compile>
     <Compile Include="..\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Domain\Persistence\GetEventStoreAggregateRepositoryTests.cs" />
+    <Compile Include="EventSourcing\GetEventStoreFixture.cs" />
     <Compile Include="EventSourcing\GetEventStoreTests.cs" />
     <Compile Include="GetEventStoreFixture.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
