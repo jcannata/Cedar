@@ -199,8 +199,7 @@
                     return @event as EventMessage
                            ?? (EventMessage)Activator.CreateInstance(
                                typeof(EventMessage<>).MakeGenericType(
-                                   @event.GetType()),
-                               new[] { "streamId", @event, 0, new Dictionary<string, object>(), null });
+                                   @event.GetType()), "streamId", @event, 0, new Dictionary<string, string>(), null);
                 }
 
             }

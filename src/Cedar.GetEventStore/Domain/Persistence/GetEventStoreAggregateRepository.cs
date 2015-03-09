@@ -28,7 +28,7 @@
         {
             _connection = connection;
             _serializer = serializer ?? new JsonSerializer();
-            _getUtcNow = getUtcNow ?? Cedar.SystemClock.GetUtcNow;
+            _getUtcNow = getUtcNow ?? SystemClock.GetUtcNow;
         }
 
         public override async Task<TAggregate> GetById<TAggregate>(

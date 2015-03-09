@@ -4,7 +4,6 @@
     using System.Threading;
     using System.Threading.Tasks;
     using Cedar.Domain.Persistence;
-    using Cedar.GetEventStore.Handlers;
     using Cedar.GetEventStore.Serialization;
     using Cedar.ProcessManagers;
     using Cedar.ProcessManagers.Messages;

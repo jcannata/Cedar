@@ -1,7 +1,6 @@
 namespace Cedar.GetEventStore.ProcessManagers
 {
     using System;
-    using Cedar.GetEventStore.Handlers;
     using EventStore.ClientAPI;
 
     public class CompareablePosition : IComparable<string>

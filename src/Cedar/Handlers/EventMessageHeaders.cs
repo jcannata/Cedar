@@ -2,9 +2,9 @@
 {
     public static class EventMessageHeaders
     {
-        public const string StreamId = "StreamId";
-        public const string CommitId = "CommitId";
-        public const string Type = "Type";
-        public const string Timestamp = "Timestamp";
+        public const string StreamId = "stream-id";
+        public const string CommitId = "commit-id";
+        public const string Type = "type";
+        public const string Timestamp = "timestamp";
     }
 }

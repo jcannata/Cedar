@@ -55,7 +55,7 @@
         {
             headers = (IDictionary<string, string>)serializer.Deserialize(Decode(resolvedEvent.Event.Metadata), typeof(Dictionary<string, string>));
 
-            var type = Type.GetType(headers[EventMessageHeaders.Type]);
+            var type = Type.GetType(headers[EventMessageHeaders.Type.ToLower()]);
 
             var @event = serializer.Deserialize(Decode(resolvedEvent.Event.Data), type);
 
