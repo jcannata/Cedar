@@ -35,7 +35,7 @@
             headers[EventMessageHeaders.Type] = getClrType(eventType);
             headers[EventMessageHeaders.Timestamp] = getUtcNow.ToString();
 
-            var metadata = Encode(serializer.Serialize(headers));
+            var metadata = MetadataHelper.GetMetadata(serializer, headers);
 
             return new EventData(eventId, eventType.Name, true, data, metadata);
         }
@@ -53,13 +53,23 @@
             ResolvedEvent resolvedEvent,
             out IDictionary<string, string> headers)
         {
-            headers = (IDictionary<string, string>)serializer.Deserialize(Decode(resolvedEvent.Event.Metadata), typeof(Dictionary<string, string>));
+            headers = MetadataHelper.GetHeaders(serializer, resolvedEvent.Event.Metadata);
 
             var type = Type.GetType(headers[EventMessageHeaders.Type.ToLower()]);
 
             var @event = serializer.Deserialize(Decode(resolvedEvent.Event.Data), type);
 
             return @event;
+        }
+
+        internal static IDictionary<string, string> GetHeaders(this ISerializer serializer, byte[] metadata)
+        {
+            return (IDictionary<string, string>)serializer.Deserialize(Decode(metadata), typeof(Dictionary<string, string>));
+        }
+
+        internal static byte[] GetMetadata(this ISerializer serializer, IDictionary<string, string> headers)
+        {
+            return headers == null ? null : Encode(serializer.Serialize(headers));
         }
 
         private static byte[] Encode(string s)

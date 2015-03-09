@@ -8,13 +8,13 @@
     {
         // TODO support buckets or not??
 
-        Task AppendToStream(string streamId, int expectedVersion, IEnumerable<IStreamEvent> @events);
+        Task AppendToStream(string streamId, int expectedVersion, IEnumerable<NewSteamEvent> events);
 
-        Task DeleteStream(string streamId);
+        Task DeleteStream(string streamId, int expectedVersion = ExpectedVersion.Any, bool hardDelete = true);
 
-        Task<IAllEventsPage> ReadAll(string checkpoint, int maxCount, ReadDirection direction = ReadDirection.Forwards);
+        Task<IAllEventsPage> ReadAll(string checkpoint, int maxCount, ReadDirection direction = ReadDirection.Forward);
 
-        Task<IStreamEventsPage> ReadStream(string streamId, int start, int count, ReadDirection direction = ReadDirection.Forwards);
+        Task<IStreamEventsPage> ReadStream(string streamId, int start, int count, ReadDirection direction = ReadDirection.Forward);
     }
 
     public interface IAllEventsPage
@@ -32,7 +32,7 @@
 
     public interface IStreamEventsPage
     {
-        IStreamEvent[] Events { get; }
+        IReadOnlyCollection<IStreamEvent> Events { get; }
 
         int FromSequenceNumber { get; }
 
@@ -49,16 +49,22 @@
         string StreamId { get; }
     }
 
-    public enum StreamPosition
+    /// <summary>
+    /// Constants for stream positions
+    /// 
+    /// </summary>
+    public static class StreamPosition
     {
-        Start = 0,
-        End = -1
-    }
-
-    public enum ReadDirection
-    {
-        Forwards,
-        Backwards
+        /// <summary>
+        /// The first event in a stream
+        /// 
+        /// </summary>
+        public const int Start = 0;
+        /// <summary>
+        /// The last event in the stream.
+        /// 
+        /// </summary>
+        public const int End = -1;
     }
 
     public enum PageReadStatus
@@ -74,10 +80,24 @@
 
         Guid EventId { get; }
 
-        IReadOnlyDictionary<string, string> Headers { get; set; } 
+        IReadOnlyDictionary<string, string> Headers { get; } 
 
         int SequenceNumber { get; }
 
         string StreamId { get; }
+    }
+
+    public class NewSteamEvent
+    {
+        public readonly Guid EventId;
+        public readonly byte[] Body;
+        public readonly IDictionary<string, string> Headers;
+
+        public NewSteamEvent(Guid eventId, byte[] body, IDictionary<string, string> headers = null)
+        {
+            EventId = eventId;
+            Body = body;
+            Headers = headers;
+        }
     }
 }

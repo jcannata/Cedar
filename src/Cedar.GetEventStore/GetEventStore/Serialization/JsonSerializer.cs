@@ -7,6 +7,8 @@
 
     internal class JsonSerializer : ISerializer
     {
+        internal static JsonSerializer Instance;
+
         private static readonly JsonSerializerSettings s_settings = new JsonSerializerSettings
         {
             ContractResolver = new CamelCasePropertyNamesContractResolver(),
@@ -14,7 +16,12 @@
         };
         private readonly Newtonsoft.Json.JsonSerializer _jsonSerializer;
 
-        internal JsonSerializer()
+        static JsonSerializer()
+        {
+            Instance = new JsonSerializer();
+        }
+
+        private JsonSerializer()
         {
             _jsonSerializer = Newtonsoft.Json.JsonSerializer.Create(s_settings);
         }

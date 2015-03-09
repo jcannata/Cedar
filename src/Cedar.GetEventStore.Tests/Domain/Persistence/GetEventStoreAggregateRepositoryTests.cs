@@ -13,7 +13,6 @@
         public GetEventStoreAggregateRepositoryTests()
         {
             _id = "aggregate-" + Guid.NewGuid().ToString("n");
-
             _fixture = new GetEventStoreFixture();
         }
 

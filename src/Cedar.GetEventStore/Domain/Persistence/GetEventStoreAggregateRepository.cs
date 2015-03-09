@@ -27,7 +27,7 @@
             : base(createAggregate)
         {
             _connection = connection;
-            _serializer = serializer ?? new JsonSerializer();
+            _serializer = serializer ?? JsonSerializer.Instance;
             _getUtcNow = getUtcNow ?? SystemClock.GetUtcNow;
         }
 
