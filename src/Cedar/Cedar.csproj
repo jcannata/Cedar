@@ -75,6 +75,7 @@
     <Compile Include="Domain\Persistence\PersistenceException.cs" />
     <Compile Include="Domain\Persistence\AggregateRepositoryExtensions.cs" />
     <Compile Include="Domain\RegistrationEventRouter.cs" />
+    <Compile Include="EventSourcing\IEventStore.cs" />
     <Compile Include="Internal\Crypto\HashAlgorithim.cs" />
     <Compile Include="Internal\Crypto\SHA1.cs" />
     <Compile Include="Internal\Crypto\SHA1CryptoServiceProvider.cs" />
