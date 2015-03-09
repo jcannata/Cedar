@@ -187,7 +187,7 @@
 
                 public IReadOnlyDictionary<string, string> Headers
                 {
-                    get { return new ReadOnlyDictionary<string, string>(_lazyHeaders.Value); }
+                    get { return new ReadOnlyDictionary<string, string>(_lazyHeaders.Value ?? new Dictionary<string, string>()); }
                 }
 
                 public int SequenceNumber

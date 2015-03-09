@@ -57,7 +57,7 @@
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Domain\Persistence\GetEventStoreAggregateRepositoryTests.cs" />
-    <Compile Include="EventSourcing\GetEventStoreEventStoreTests.cs" />
+    <Compile Include="EventSourcing\GetEventStoreTests.cs" />
     <Compile Include="GetEventStoreFixture.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
