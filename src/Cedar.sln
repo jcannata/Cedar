@@ -34,6 +34,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cedar.Sqlite", "Cedar.Sqlit
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cedar.Sqlite-PCL", "Cedar.Sqlite\Cedar.Sqlite-PCL.csproj", "{B6D70596-5DD9-4B8D-AE3D-346CF980AD97}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cedar.GetEventStore.Tests", "Cedar.GetEventStore.Tests\Cedar.GetEventStore.Tests.csproj", "{CF84A4AC-6E54-4B4A-AC8F-F993DA56BC56}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -80,6 +82,10 @@ Global
 		{B6D70596-5DD9-4B8D-AE3D-346CF980AD97}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B6D70596-5DD9-4B8D-AE3D-346CF980AD97}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B6D70596-5DD9-4B8D-AE3D-346CF980AD97}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CF84A4AC-6E54-4B4A-AC8F-F993DA56BC56}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CF84A4AC-6E54-4B4A-AC8F-F993DA56BC56}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CF84A4AC-6E54-4B4A-AC8F-F993DA56BC56}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CF84A4AC-6E54-4B4A-AC8F-F993DA56BC56}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

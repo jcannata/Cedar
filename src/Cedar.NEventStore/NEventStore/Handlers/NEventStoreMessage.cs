@@ -1,6 +1,7 @@
 namespace Cedar.NEventStore.Handlers
 {
     using System.Collections.Generic;
+    using System.Linq;
     using Cedar.Handlers;
     using global::NEventStore;
     using EventMessage = global::NEventStore.EventMessage;
@@ -11,23 +12,16 @@ namespace Cedar.NEventStore.Handlers
         {
             var @event = (T)eventMessage.Body;
 
-            var headers = new Dictionary<string, object>(commit.Headers).Merge(@eventMessage.Headers, new Dictionary<string, object>
+            Dictionary<string, string> cedarHeaders = commit.Headers.ToDictionary(kvp => kvp.Key, kvp => kvp.Value as string);
+            Dictionary<string, string> eventMessageHeaders = @eventMessage.Headers.ToDictionary(kvp => kvp.Key, kvp => kvp.Value as string);
+
+            IDictionary<string, string> headers = cedarHeaders.Merge(eventMessageHeaders, new Dictionary<string, string>
             {
                 {EventMessageHeaders.StreamId, commit.StreamId},
-                {EventMessageHeaders.Type, typeof(T)},
-                {NEventStoreMessageHeaders.Commit, commit}
+                {EventMessageHeaders.Type, typeof(T).FullName},
             });
 
             return new EventMessage<T>(commit.StreamId, @event, version, headers, commit.CheckpointToken);
-        }
-
-        public static ICommit Commit<T>(this EventMessage<T> message) where T : class
-        {
-            object commit;
-
-            message.Headers.TryGetValue(NEventStoreMessageHeaders.Commit, out commit);
-
-            return commit as ICommit;
         }
     }
 }

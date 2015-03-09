@@ -41,10 +41,10 @@ namespace Cedar.Domain.Persistence
             IAggregate aggregate,
             string bucketId,
             Guid commitId,
-            Action<IDictionary<string, object>> updateHeaders,
+            Action<IDictionary<string, string>> updateHeaders,
             CancellationToken cancellationToken)
         {
-            Dictionary<string, object> headers = PrepareHeaders(aggregate, updateHeaders);
+            Dictionary<string, string> headers = PrepareHeaders(aggregate, updateHeaders);
             int streamHead;
 
             if (!_streamHeads.TryGetValue(Tuple.Create(bucketId, aggregate.Id), out streamHead))
@@ -57,7 +57,9 @@ namespace Cedar.Domain.Persistence
                 return Task.FromResult(0);
             }
 
-            var commitAttempt = new CommitAttempt(bucketId, aggregate.Id, streamHead, commitId, aggregate.Version, DateTime.UtcNow, headers,
+            var dictionary = headers.ToDictionary(kvp => kvp.Key, kvp => (object) kvp.Value);
+
+            var commitAttempt = new CommitAttempt(bucketId, aggregate.Id, streamHead, commitId, aggregate.Version, DateTime.UtcNow, dictionary,
                 uncommittedEvents.Select(uncommittedEvent => new EventMessage
                 {
                     Body = uncommittedEvent.Event,
@@ -104,11 +106,11 @@ namespace Cedar.Domain.Persistence
             return lastStreamRevision;
         }
 
-        private static Dictionary<string, object> PrepareHeaders(
+        private static Dictionary<string, string> PrepareHeaders(
             IAggregate aggregate,
-            Action<IDictionary<string, object>> updateHeaders)
+            Action<IDictionary<string, string>> updateHeaders)
         {
-            var headers = new Dictionary<string, object>();
+            var headers = new Dictionary<string, string>();
 
             headers[AggregateTypeHeader] = aggregate.GetType().FullName;
             if (updateHeaders != null)

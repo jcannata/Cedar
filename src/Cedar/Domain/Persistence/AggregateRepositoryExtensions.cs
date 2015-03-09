@@ -153,7 +153,7 @@
             [NotNull] this IAggregateRepository repository,
             IAggregate aggregate,
             Guid commitId,
-            Action<IDictionary<string, object>> updateHeaders,
+            Action<IDictionary<string, string>> updateHeaders,
             CancellationToken cancellationToken)
         {
             Ensure.That(repository, "repository").IsNotNull();

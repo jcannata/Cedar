@@ -1,4 +1,4 @@
-﻿namespace Cedar.GetEventStore.Domain.Persistence
+﻿namespace Cedar.Domain.Persistence
 {
     using System;
     using System.Collections.Generic;
@@ -6,7 +6,7 @@
     using System.Threading;
     using System.Threading.Tasks;
     using Cedar.Domain;
-    using Cedar.Domain.Persistence;
+    using Cedar.GetEventStore;
     using Cedar.GetEventStore.Serialization;
     using Cedar.Handlers;
     using Cedar.Internal;
@@ -16,16 +16,19 @@
     {
         private const int PageSize = 512;
         private readonly IEventStoreConnection _connection;
+        private readonly GetUtcNow _getUtcNow;
         private readonly ISerializer _serializer;
 
         public GetEventStoreAggregateRepository(
             IEventStoreConnection connection,
             ISerializer serializer = null,
-            CreateAggregate createAggregate = null)
+            CreateAggregate createAggregate = null,
+            GetUtcNow getUtcNow = null)
             : base(createAggregate)
         {
             _connection = connection;
-            _serializer = serializer ?? new DefaultJsonSerializer();
+            _serializer = serializer ?? new JsonSerializer();
+            _getUtcNow = getUtcNow ?? Cedar.SystemClock.GetUtcNow;
         }
 
         public override async Task<TAggregate> GetById<TAggregate>(
@@ -41,12 +44,12 @@
                 return default(TAggregate);
             }
             var aggregate = CreateAggregate<TAggregate>(id);
-            ApplySlice(version, slice, aggregate);
+            ApplySlice(version, slice.Events, aggregate);
 
             while (!slice.IsEndOfStream)
             {
                 slice = await _connection.ReadStreamEventsForwardAsync(streamId, slice.NextEventNumber, PageSize, false).NotOnCapturedContext();
-                ApplySlice(version, slice, aggregate);
+                ApplySlice(version, slice.Events, aggregate);
             }
 
             return aggregate;
@@ -56,7 +59,7 @@
             IAggregate aggregate,
             string bucketId,
             Guid commitId,
-            Action<IDictionary<string, object>> updateHeaders,
+            Action<IDictionary<string, string>> updateHeaders,
             CancellationToken cancellationToken)
         {
             var changes = aggregate.TakeUncommittedEvents();
@@ -78,10 +81,11 @@
                 return _serializer.SerializeEventData(
                     uncommittedEvent.Event,
                     uncommittedEvent.EventId,
+                    _getUtcNow,
                     headers =>
                     {
                         updateHeaders(headers);
-                        headers[EventMessageHeaders.CommitId] = commitId;
+                        headers[EventMessageHeaders.CommitId] = commitId.ToString();
                     });
             });
 
@@ -93,12 +97,12 @@
             }
         }
 
-        private void ApplySlice(int maxVersion, StreamEventsSlice slice, IAggregate aggregate)
+        private void ApplySlice(int maxVersion, ResolvedEvent[] events, IAggregate aggregate)
         {
             int version = aggregate.Version;
-            var eventsToApply = from @event in slice.Events
+            var eventsToApply = from resolvedEvent in events
                 where ++version <= maxVersion
-                select _serializer.DeserializeEventData(@event);
+                select _serializer.DeserializeEventData(resolvedEvent);
 
             using(var rehydrateAggregate = aggregate.BeginRehydrate())
             {

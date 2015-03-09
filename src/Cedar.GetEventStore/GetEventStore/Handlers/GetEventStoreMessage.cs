@@ -8,7 +8,7 @@
     {
         public static EventMessage<T> Create<T>(
             T domainEvent,
-            IDictionary<string, object> headers,
+            IDictionary<string, string> headers,
             ResolvedEvent resolvedEvent,
             bool isSubscribedToAll) where T : class
         {

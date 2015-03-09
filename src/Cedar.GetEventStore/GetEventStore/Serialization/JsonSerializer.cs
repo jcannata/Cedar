@@ -5,25 +5,18 @@
     using Newtonsoft.Json;
     using Newtonsoft.Json.Serialization;
 
-    internal class DefaultJsonSerializer : ISerializer
+    internal class JsonSerializer : ISerializer
     {
-        internal static readonly ISerializer Instance;
-        internal static readonly JsonSerializerSettings Settings = new JsonSerializerSettings
+        private static readonly JsonSerializerSettings s_settings = new JsonSerializerSettings
         {
             ContractResolver = new CamelCasePropertyNamesContractResolver(),
             TypeNameHandling = TypeNameHandling.None
         };
+        private readonly Newtonsoft.Json.JsonSerializer _jsonSerializer;
 
-        private readonly JsonSerializer _jsonSerializer;
-
-        static DefaultJsonSerializer()
+        internal JsonSerializer()
         {
-            Instance = new DefaultJsonSerializer();
-        }
-
-        internal DefaultJsonSerializer()
-        {
-            _jsonSerializer = JsonSerializer.Create(Settings);
+            _jsonSerializer = Newtonsoft.Json.JsonSerializer.Create(s_settings);
         }
 
         public object Deserialize(TextReader reader, Type type)

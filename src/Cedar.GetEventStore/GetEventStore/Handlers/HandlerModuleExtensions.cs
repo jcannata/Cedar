@@ -12,11 +12,11 @@
 
     public static class HandlerModuleExtensions
     {
-        private static readonly MethodInfo DispatchDomainEventMethod;
+        private static readonly MethodInfo s_dispatchDomainEventMethod;
 
         static HandlerModuleExtensions()
         {
-            DispatchDomainEventMethod = typeof(HandlerModuleExtensions)
+            s_dispatchDomainEventMethod = typeof(HandlerModuleExtensions)
                 .GetMethod("DispatchDomainEvent", BindingFlags.Static | BindingFlags.NonPublic);
         }
 
@@ -30,10 +30,10 @@
             Ensure.That(handlerResolver, "handlerResolver").IsNotNull();
             Ensure.That(serializer, "serializer").IsNotNull();
 
-            IDictionary<string, object> headers;
+            IDictionary<string, string> headers;
             var @event = serializer.DeserializeEventData(resolvedEvent, out headers);
 
-            return (Task) DispatchDomainEventMethod.MakeGenericMethod(@event.GetType()).Invoke(null, new[]
+            return (Task) s_dispatchDomainEventMethod.MakeGenericMethod(@event.GetType()).Invoke(null, new[]
             {
                 handlerResolver, serializer, @event, headers, resolvedEvent, isSubscribedToAll, cancellationToken
             });
@@ -44,7 +44,7 @@
             IHandlerResolver handlerResolver,
             [NotNull] ISerializer serializer,
             TDomainEvent domainEvent,
-            IDictionary<string, object> headers,
+            IDictionary<string, string> headers,
             ResolvedEvent resolvedEvent,
             bool isSubscribedToAll,
             CancellationToken cancellationToken)

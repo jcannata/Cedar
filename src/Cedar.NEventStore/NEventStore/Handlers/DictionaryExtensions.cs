@@ -5,16 +5,16 @@ namespace Cedar.NEventStore.Handlers
 
     internal static class DictionaryExtensions
     {
-        public static IDictionary<string, object> Merge(
-            this IDictionary<string, object> target,
-            params IDictionary<string, object>[] others)
+        internal static IDictionary<string, string> Merge(
+            this IDictionary<string, string> target,
+            params IDictionary<string, string>[] others)
         {
             return target.Merge(others.AsEnumerable());
         }
 
-        private static IDictionary<string, object> Merge(
-            this IDictionary<string, object> target,
-            IEnumerable<IDictionary<string, object>> others)
+        private static IDictionary<string, string> Merge(
+            this IDictionary<string, string> target,
+            IEnumerable<IDictionary<string, string>> others)
         {
             foreach(var pair in others.SelectMany(other => other))
             {

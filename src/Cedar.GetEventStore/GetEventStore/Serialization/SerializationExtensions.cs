@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Text;
+    using Cedar.GetEventStore;
     using Cedar.Handlers;
     using EnsureThat;
     using EventStore.ClientAPI;
@@ -13,24 +14,26 @@
             this ISerializer serializer, 
             object @event, 
             Guid eventId,
-            Action<IDictionary<string, object>> updateHeaders = null, 
+            GetUtcNow getUtcNow = null,
+            Action<IDictionary<string, string>> updateHeaders = null, 
             Func<Type, string> getClrType = null)
         {
             Ensure.That(serializer, "serializer").IsNotNull();
             Ensure.That(@event, "@event").IsNotNull();
 
+            getUtcNow = getUtcNow ?? SystemClock.GetUtcNow;
             getClrType = getClrType ?? TypeUtilities.ToPartiallyQualifiedName;
             updateHeaders = updateHeaders ?? (_ => { });
             
             var data = Encode(serializer.Serialize(@event));
 
-            var headers = new Dictionary<string, object>();
+            var headers = new Dictionary<string, string>();
             updateHeaders(headers);
 
             var eventType = @event.GetType();
 
             headers[EventMessageHeaders.Type] = getClrType(eventType);
-            headers[EventMessageHeaders.Timestamp] = DateTime.UtcNow;
+            headers[EventMessageHeaders.Timestamp] = getUtcNow.ToString();
 
             var metadata = Encode(serializer.Serialize(headers));
 
@@ -41,19 +44,18 @@
             this ISerializer serializer,
             ResolvedEvent resolvedEvent)
         {
-            IDictionary<string, object> _;
-
+            IDictionary<string, string> _;
             return serializer.DeserializeEventData(resolvedEvent, out _);
         }
 
         public static object DeserializeEventData(
             this ISerializer serializer,
             ResolvedEvent resolvedEvent,
-            out IDictionary<string, object> headers)
+            out IDictionary<string, string> headers)
         {
-            headers = (IDictionary<string, object>)serializer.Deserialize(Decode(resolvedEvent.Event.Metadata), typeof(Dictionary<string, object>));
+            headers = (IDictionary<string, string>)serializer.Deserialize(Decode(resolvedEvent.Event.Metadata), typeof(Dictionary<string, string>));
 
-            var type = Type.GetType((string)headers[EventMessageHeaders.Type]);
+            var type = Type.GetType(headers[EventMessageHeaders.Type]);
 
             var @event = serializer.Deserialize(Decode(resolvedEvent.Event.Data), type);
 

@@ -5,7 +5,7 @@
     public abstract class EventMessage
     {
         public readonly dynamic DomainEvent;
-        public readonly IDictionary<string, object> Headers;
+        public readonly IDictionary<string, string> Headers;
         public readonly int Version;
         public readonly string CheckpointToken;
         public readonly string StreamId;
@@ -14,7 +14,7 @@
             string streamId,
             object domainEvent,
             int version,
-            IDictionary<string, object> headers,
+            IDictionary<string, string> headers,
             string checkpointToken)
         {
             DomainEvent = domainEvent;
@@ -39,7 +39,7 @@
             string streamId,
             T domainEvent,
             int version,
-            IDictionary<string, object> headers,
+            IDictionary<string, string> headers,
             string checkpointToken) : base(streamId, domainEvent, version, headers, checkpointToken)
         {
             DomainEvent = domainEvent;

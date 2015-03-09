@@ -63,21 +63,20 @@
     <Compile Include="..\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="Handlers\DictionaryExtensions.cs" />
+    <Compile Include="NEventStore\Handlers\DictionaryExtensions.cs" />
     <Compile Include="Domain\Persistence\NEventStoreAggregateRepository.cs" />
-    <Compile Include="Handlers\NEventStoreMessage.cs" />
-    <Compile Include="Handlers\DurableCommitDispatcher.cs" />
-    <Compile Include="Handlers\HandlerModuleExtensions.cs" />
-    <Compile Include="TempImportFromNES\IEventStoreClient.cs" />
-    <Compile Include="Handlers\Messages.Designer.cs">
+    <Compile Include="NEventStore\Handlers\NEventStoreMessage.cs" />
+    <Compile Include="NEventStore\Handlers\DurableCommitDispatcher.cs" />
+    <Compile Include="NEventStore\Handlers\HandlerModuleExtensions.cs" />
+    <Compile Include="NEventStore\TempImportFromNES\IEventStoreClient.cs" />
+    <Compile Include="NEventStore\Handlers\Messages.Designer.cs">
       <DependentUpon>Messages.resx</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Handlers\NEventStoreMessageHeaders.cs" />
-    <Compile Include="TempImportFromNES\EventStoreClient.cs" />
-    <Compile Include="TempImportFromNES\LruCache.cs" />
-    <Compile Include="Projections\NEventStoreProjectionDispatcher.cs" />
+    <Compile Include="NEventStore\TempImportFromNES\EventStoreClient.cs" />
+    <Compile Include="NEventStore\TempImportFromNES\LruCache.cs" />
+    <Compile Include="NEventStore\Projections\NEventStoreProjectionDispatcher.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -85,7 +84,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Handlers\Messages.resx">
+    <EmbeddedResource Include="NEventStore\Handlers\Messages.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Messages.Designer.cs</LastGenOutput>
     </EmbeddedResource>

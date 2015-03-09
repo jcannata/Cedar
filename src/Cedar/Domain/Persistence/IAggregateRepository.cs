@@ -28,7 +28,7 @@ namespace Cedar.Domain.Persistence
             IAggregate aggregate,
             string bucketId,
             Guid commitId,
-            Action<IDictionary<string, object>> updateHeaders,
+            Action<IDictionary<string, string>> updateHeaders,
             CancellationToken cancellationToken);
     }
 }

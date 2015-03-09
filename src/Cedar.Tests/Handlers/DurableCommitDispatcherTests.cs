@@ -52,7 +52,6 @@
                         await commitProjected;
 
                         dispatchedEvents.Count.Should().Be(1);
-                        dispatchedEvents[0].Commit().Should().NotBeNull();
                         dispatchedEvents[0].Headers.Should().NotBeNull();
                         dispatchedEvents[0].Version.Should().Be(1);
                         dispatchedEvents[0].DomainEvent.Should().BeOfType<TestEvent>();
