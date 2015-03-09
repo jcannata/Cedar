@@ -95,6 +95,32 @@
             }
         }
 
+        [Fact]
+        public async Task Can_delete_a_stream()
+        {
+            using (var connection = await _fixture.GetConnection())
+            {
+                var eventStore = new GetEventStore(connection);
+
+                const string streamId = "stream";
+                var events = new[]
+                {
+                    new NewSteamEvent(Guid.NewGuid(), new byte[0], new Dictionary<string, string>
+                    {
+                        {"name", "value" }
+                    }),
+                    new NewSteamEvent(Guid.NewGuid(), new byte[0])
+                };
+
+                await eventStore.AppendToStream(streamId, ExpectedVersion.NoStream, events);
+                await eventStore.DeleteStream(streamId);
+
+                var streamEventsPage = await eventStore.ReadStream(streamId, StreamPosition.End, 10, ReadDirection.Backward);
+
+                streamEventsPage.Status.Should().Be(PageReadStatus.StreamDeleted);
+            }
+        }
+
         public void Dispose()
         {
             _fixture.Dispose();
