@@ -1,25 +1,10 @@
 ﻿namespace Cedar.EventSourcing
 {
-    using System.Threading.Tasks;
-
-    public partial class EventStoreAcceptanceTests
+    public class InMemoryEventStoreTests: EventStoreAcceptanceTests
     {
-        private class InMemoryEventStoreFixture : EventStoreAcceptanceTestFixture
+        protected override EventStoreAcceptanceTestFixture GetFixture()
         {
-            public override Task<IEventStore> GetEventStore()
-            {
-                throw new System.NotImplementedException();
-            }
-
-            public override void Dispose()
-            {
-                throw new System.NotImplementedException();
-            }
-        }
-
-        public EventStoreAcceptanceTests()
-        {
-            _fixture = new InMemoryEventStoreFixture();
+            return new InMemoryEventStoreFixture();
         }
     }
 }

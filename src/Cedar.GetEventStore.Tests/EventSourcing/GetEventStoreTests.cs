@@ -1,10 +1,10 @@
 ﻿namespace Cedar.EventSourcing
 {
-    public partial class EventStoreAcceptanceTests
+    public class GetEventStoreTests : EventStoreAcceptanceTests
     {
-        public EventStoreAcceptanceTests()
+        protected override EventStoreAcceptanceTestFixture GetFixture()
         {
-            _fixture = new GetEventStoreFixture();
+            return new GetEventStoreFixture();
         }
     }
 }

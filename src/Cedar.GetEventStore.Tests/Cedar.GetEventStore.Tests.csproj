@@ -53,9 +53,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\Cedar.Tests\EventSourcing\EventStoreAcceptanceTests.cs">
-      <Link>EventSourcing\EventStoreAcceptanceTests.cs</Link>
-    </Compile>
     <Compile Include="..\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
@@ -72,6 +69,10 @@
     <ProjectReference Include="..\Cedar.GetEventStore\Cedar.GetEventStore.csproj">
       <Project>{1678CA64-D69C-4278-86AA-C78659181D2A}</Project>
       <Name>Cedar.GetEventStore</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Cedar.Tests\Cedar.Tests.csproj">
+      <Project>{f286e287-573f-495e-804a-6278c9b7beb8}</Project>
+      <Name>Cedar.Tests</Name>
     </ProjectReference>
     <ProjectReference Include="..\Cedar\Cedar.csproj">
       <Project>{1579A2B2-2DA9-439B-A026-0E14CEE7EBD3}</Project>
