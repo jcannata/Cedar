@@ -6,9 +6,20 @@
 
     public class SqliteEventStoreFixture : EventStoreAcceptanceTestFixture
     {
+        readonly string databaseFile = @"c:\temp\test.sdb";
+
         public override Task<IEventStore> GetEventStore()
         {
-            return Task.FromResult((IEventStore)new SqliteEventStore(new SQLitePlatformWin32(), "test.sdb"));
+            /*if(File.Exists(databaseFile))
+            {
+                File.Delete(databaseFile);
+            }*/
+            var eventStore = new SqliteEventStore(new SQLitePlatformWin32(), databaseFile);
+            
+            eventStore.Drop();
+            eventStore.Initialize();
+
+            return Task.FromResult((IEventStore)eventStore);
         }
 
         public override void Dispose()
