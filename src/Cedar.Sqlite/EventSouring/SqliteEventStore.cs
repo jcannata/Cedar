@@ -1,27 +1,18 @@
 ﻿namespace Cedar.EventSouring
 {
     using System.Collections.Generic;
-#if !SQLITE_PCL
-    using System.Data.SQLite;
-#endif
     using System.Threading.Tasks;
     using Cedar.EventSourcing;
-#if SQLITE_PCL
-    using SQLitePCL;
-#endif
+    using SQLite.Net;
+    using SQLite.Net.Interop;
 
     public class SqliteEventStore : IEventStore
     {
         private readonly SQLiteConnection _connection;
 
-        public SqliteEventStore()
+        public SqliteEventStore(ISQLitePlatform sqLitePlatform, string databasePath)
         {
-            _connection = new SQLiteConnection("Data Source=:memory:");
-        }
-
-        public SqliteEventStore(string file)
-        {
-            
+            _connection = new SQLiteConnection(sqLitePlatform, databasePath);
         }
 
         public Task AppendToStream(string streamId, int expectedVersion, IEnumerable<NewSteamEvent> events)
