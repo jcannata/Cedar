@@ -1,5 +1,6 @@
 ﻿namespace Cedar.EventSourcing
 {
+    using System;
     using System.Net;
     using System.Threading.Tasks;
     using EventStore.ClientAPI;
@@ -10,7 +11,7 @@
     internal class GetEventStoreFixture : EventStoreAcceptanceTestFixture
     {
         private static readonly IPEndPoint s_noEndpoint = new IPEndPoint(IPAddress.None, 0);
-        private readonly IEventStoreConnection _connection;
+        private readonly Func<IEventStoreConnection> _createConnection;
         private readonly ClusterVNode _node;
         private readonly TaskCompletionSource<bool> _connected = new TaskCompletionSource<bool>();
 
@@ -32,7 +33,7 @@
                 }
                 _connected.SetResult(true);
             };
-            _connection = EmbeddedEventStoreConnection.Create(_node);
+            _createConnection = () => EmbeddedEventStoreConnection.Create(_node);
 
             _node.Start();
         }
@@ -40,12 +41,11 @@
         public override async Task<IEventStore> GetEventStore()
         {
             await _connected.Task;
-            return new GetEventStore(_connection);
+            return new GetEventStore(_createConnection);
         }
 
         public override void Dispose()
         {
-            _connection.Dispose();
             _node.Stop();
         }
     }

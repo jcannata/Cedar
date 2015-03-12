@@ -10,16 +10,16 @@
     using EnsureThat;
     using EventStore.ClientAPI;
 
-    public class GetEventStore : IEventStore // lol name
+    public class GetEventStore : IEventStore
     {
         private readonly IEventStoreConnection _connection;
         private readonly ISerializer _serializer;
 
-        public GetEventStore(IEventStoreConnection connection, ISerializer serializer = null)
+        public GetEventStore(Func<IEventStoreConnection> createConnection, ISerializer serializer = null)
         {
-            Ensure.That(connection, "eventStoreConnection").IsNotNull();
+            Ensure.That(createConnection, "connectionFactory").IsNotNull();
 
-            _connection = connection;
+            _connection = createConnection();
             _serializer = serializer ?? JsonSerializer.Instance;
         }
 
@@ -200,6 +200,11 @@
                     get { return _resolvedEvent.Event.EventStreamId; }
                 }
             }
+        }
+
+        public void Dispose()
+        {
+            _connection.Dispose();
         }
     }
 }
