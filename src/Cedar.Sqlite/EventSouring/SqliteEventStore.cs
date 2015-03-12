@@ -1,9 +1,14 @@
 ﻿namespace Cedar.EventSouring
 {
     using System.Collections.Generic;
+#if !SQLITE_PCL
     using System.Data.SQLite;
+#endif
     using System.Threading.Tasks;
     using Cedar.EventSourcing;
+#if SQLITE_PCL
+    using SQLitePCL;
+#endif
 
     public class SqliteEventStore : IEventStore
     {

@@ -10,6 +10,7 @@
 
 namespace Cedar.EventSouring {
     using System;
+    using System.Reflection;
     
     
     /// <summary>
@@ -39,7 +40,7 @@ namespace Cedar.EventSouring {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Cedar.EventSouring.Schema1", typeof(Schema1).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Cedar.EventSouring.Schema1", typeof(Schema1).GetTypeInfo().Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
