@@ -46,19 +46,8 @@
     <Compile Include="..\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="EventSouring\Schema1.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Schema1.resx</DependentUpon>
-    </Compile>
     <Compile Include="EventSouring\SqliteEventStore.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="EventSouring\Schema1.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Schema1.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="SQLite.Net">
