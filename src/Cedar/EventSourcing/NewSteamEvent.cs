@@ -1,19 +1,18 @@
 ﻿namespace Cedar.EventSourcing
 {
     using System;
-    using System.Collections.Generic;
 
     public class NewSteamEvent
     {
         public readonly Guid EventId;
         public readonly byte[] Body;
-        public readonly IDictionary<string, string> Headers;
+        public readonly byte[] Metadata;
 
-        public NewSteamEvent(Guid eventId, byte[] body, IDictionary<string, string> headers = null)
+        public NewSteamEvent(Guid eventId, byte[] body, byte[] metadata = null)
         {
             EventId = eventId;
-            Body = body;
-            Headers = headers;
+            Body = body ?? new byte[0];
+            Metadata = metadata ?? new byte[0];
         }
     }
 }

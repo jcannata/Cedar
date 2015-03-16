@@ -193,7 +193,7 @@
                 ExpectedVersion.Any,
                 new CheckpointReached
                 {
-                    CheckpointToken = checkpoint.ToCheckpointToken(),
+                    CheckpointToken = checkpoint.ToCheckpoint(),
                     CorrelationId = _correlationId,
                     ProcessId =
                         ProcessHandler<OrderFulfillment, CompareablePosition>.DefaultBuildProcessManagerId(

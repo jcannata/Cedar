@@ -2,7 +2,6 @@
 {
     using System;
     using System.Collections.Generic;
-    using System.Collections.ObjectModel;
     using System.Linq;
     using System.Threading.Tasks;
     using Cedar.EventSourcing;
@@ -48,10 +47,10 @@
             var sequence = 0;
             var eventsToInsert = events.Select(e => new Event
             {
-                Body = e.Body,
+                Body = e.Body.ToArray(),
                 BucketId = "default",
                 EventId = e.EventId,
-                Headers = null,
+                Metadata = null,
                 IsDeleted = false,
                 OriginalStreamId = streamId,
                 SequenceNumber = sequence++,
@@ -73,28 +72,29 @@
             throw new System.NotImplementedException();
         }
 
-        public Task<IAllEventsPage> ReadAll(string checkpoint, int maxCount, ReadDirection direction = ReadDirection.Forward)
+        public Task<AllEventsPage> ReadAll(string checkpoint, int maxCount, ReadDirection direction = ReadDirection.Forward)
         {
             throw new System.NotImplementedException();
         }
 
-        public Task<IStreamEventsPage> ReadStream(string streamId, int start, int count, ReadDirection direction = ReadDirection.Forward)
+        public Task<StreamEventsPage> ReadStream(string streamId, int start, int count, ReadDirection direction = ReadDirection.Forward)
         {
             var connection = _getConnection();
 
-            Event[] results = connection.Table<Event>().Where(e => e.BucketId == "default" && e.StreamId == streamId)
+            StreamEvent[] results = connection.Table<Event>().Where(e => e.BucketId == "default" && e.StreamId == streamId)
                 .OrderBy(e => e.SequenceNumber)
                 .Skip(start)
                 .Take(count)
+                .Select(e => new StreamEvent(streamId, e.EventId, e.SequenceNumber, e.Checkpoint.ToString(), e.Body, e.Metadata))
                 .ToArray();
 
-            IStreamEventsPage streamEventsPage = new StreamEventsPage(
+            StreamEventsPage streamEventsPage = new StreamEventsPage(
                 streamId,
                 PageReadStatus.Success,
-                direction,
                 results[0].SequenceNumber,
                 results[results.Length - 1].SequenceNumber,
                 results[results.Length - 1].SequenceNumber + 1,
+                direction,
                 true,
                 results);
 
@@ -144,13 +144,13 @@
             [NotNull]
             public DateTimeOffset Stamp { get; set; }
 
-            public byte[] Headers { get; set; }
+            public byte[] Metadata { get; set; }
 
             [NotNull]
             public byte[] Body { get; set; }
         }
 
-        private class StreamEventsPage : IStreamEventsPage
+        /*private class StreamEventsPage : IStreamEventsPage
         {
             private readonly int _fromSequenceNumber;
             private readonly bool _isEndOfStream;
@@ -231,7 +231,7 @@
             {
                 private readonly byte[] _body;
                 private readonly Guid _eventId;
-                private readonly IReadOnlyDictionary<string, string> _headers;
+                private readonly byte[] _headers;
                 private readonly int _sequenceNumber;
                 private readonly string _streamId;
 
@@ -241,9 +241,10 @@
                     _body = @event.Body;
                     _sequenceNumber = @event.SequenceNumber;
                     _streamId = @event.StreamId;
+                    _headers = @event.Headers;
                 }
 
-                public byte[] Body
+                public IReadOnlyCollection<byte> Body
                 {
                     get { return _body; }
                 }
@@ -253,7 +254,7 @@
                     get { return _eventId; }
                 }
 
-                public IReadOnlyDictionary<string, string> Headers
+                public IReadOnlyCollection<byte> Headers
                 {
                     get { return _headers; }
                 }
@@ -268,6 +269,6 @@
                     get { return _streamId; }
                 }
             }
-        }
+        }*/
     }
 }
