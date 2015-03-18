@@ -15,12 +15,12 @@
             throw new System.NotImplementedException();
         }
 
-        public Task<IAllEventsPage> ReadAll(string checkpoint, int maxCount, ReadDirection direction = ReadDirection.Forward)
+        public Task<AllEventsPage> ReadAll(string checkpoint, int maxCount, ReadDirection direction = ReadDirection.Forward)
         {
             throw new System.NotImplementedException();
         }
 
-        public Task<IStreamEventsPage> ReadStream(string streamId, int start, int count, ReadDirection direction = ReadDirection.Forward)
+        public Task<StreamEventsPage> ReadStream(string streamId, int start, int count, ReadDirection direction = ReadDirection.Forward)
         {
             throw new System.NotImplementedException();
         }

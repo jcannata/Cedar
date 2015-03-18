@@ -6,7 +6,7 @@
 
     public static class PositionHelper
     {
-        public static string ToCheckpointToken(this Position? position)
+        public static string ToCheckpoint(this Position? position)
         {
             return position.HasValue
                 ? position.Value.CommitPosition + "/" +

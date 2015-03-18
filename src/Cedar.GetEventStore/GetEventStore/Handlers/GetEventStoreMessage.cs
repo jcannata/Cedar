@@ -17,7 +17,7 @@
                 domainEvent, 
                 resolvedEvent.Event.EventNumber, 
                 headers, isSubscribedToAll
-                    ? resolvedEvent.OriginalPosition.ToCheckpointToken()
+                    ? resolvedEvent.OriginalPosition.ToCheckpoint()
                     : resolvedEvent.OriginalEventNumber.ToString());
         }
     }

@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\xunit.core.2.0.0\build\portable-net45+win+wpa81+wp80+monotouch+monoandroid+Xamarin.iOS\xunit.core.props" Condition="Exists('..\packages\xunit.core.2.0.0\build\portable-net45+win+wpa81+wp80+monotouch+monoandroid+Xamarin.iOS\xunit.core.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -11,7 +12,7 @@
     <AssemblyName>Cedar.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <NuGetPackageImportStamp>efd189fe</NuGetPackageImportStamp>
+    <NuGetPackageImportStamp>22ce674b</NuGetPackageImportStamp>
     <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -32,13 +33,13 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Cedar.HttpCommandHandling, Version=0.6.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Cedar.HttpCommandHandling, Version=0.8.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Cedar.HttpCommandHandling.0.6.0\lib\net45\Cedar.HttpCommandHandling.dll</HintPath>
+      <HintPath>..\packages\Cedar.HttpCommandHandling.0.8.0\lib\Net45\Cedar.HttpCommandHandling.dll</HintPath>
     </Reference>
-    <Reference Include="Cedar.HttpCommandHandling.Client, Version=0.6.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Cedar.HttpCommandHandling.Client, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Cedar.HttpCommandHandling.Client.0.6.0\lib\net45\Cedar.HttpCommandHandling.Client.dll</HintPath>
+      <HintPath>..\packages\Cedar.HttpCommandHandling.Client.0.8.0\lib\Portable-Net45+Win8+WP8+WPA81\Cedar.HttpCommandHandling.Client.dll</HintPath>
     </Reference>
     <Reference Include="EventStore.ClientAPI">
       <HintPath>..\packages\EventStore.Client.3.0.2\lib\net40\EventStore.ClientAPI.dll</HintPath>
@@ -54,9 +55,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\FluentAssertions.3.3.0\lib\net45\FluentAssertions.Core.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Owin">
-      <HintPath>..\packages\Microsoft.Owin.3.0.0\lib\net45\Microsoft.Owin.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="Microsoft.Owin, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Microsoft.Owin.3.0.1\lib\net45\Microsoft.Owin.dll</HintPath>
     </Reference>
     <Reference Include="NEventStore, Version=5.1.1.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -95,13 +96,11 @@
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.XML" />
     <Reference Include="System.Xml.Linq" />
-    <Reference Include="xunit">
-      <HintPath>..\packages\xunit.1.9.2\lib\net20\xunit.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="xunit.abstractions">
+      <HintPath>..\packages\xunit.abstractions.2.0.0\lib\net35\xunit.abstractions.dll</HintPath>
     </Reference>
-    <Reference Include="xunit.extensions">
-      <HintPath>..\packages\xunit.extensions.1.9.2\lib\net20\xunit.extensions.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="xunit.core">
+      <HintPath>..\packages\xunit.extensibility.core.2.0.0\lib\portable-net45+win+wpa81+wp80+monotouch+monoandroid+Xamarin.iOS\xunit.core.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -163,6 +162,7 @@
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('..\packages\EventStore.Client.Embedded.3.0.2\build\EventStore.Client.Embedded.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\EventStore.Client.Embedded.3.0.2\build\EventStore.Client.Embedded.targets'))" />
+    <Error Condition="!Exists('..\packages\xunit.core.2.0.0\build\portable-net45+win+wpa81+wp80+monotouch+monoandroid+Xamarin.iOS\xunit.core.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\xunit.core.2.0.0\build\portable-net45+win+wpa81+wp80+monotouch+monoandroid+Xamarin.iOS\xunit.core.props'))" />
   </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -77,10 +77,10 @@
     <Compile Include="Domain\RegistrationEventRouter.cs" />
     <Compile Include="EventSourcing\EventStoreExtensions.cs" />
     <Compile Include="EventSourcing\ExpectedVersion.cs" />
-    <Compile Include="EventSourcing\IAllEventsPage.cs" />
+    <Compile Include="EventSourcing\AllEventsPage.cs" />
     <Compile Include="EventSourcing\IEventStore.cs" />
-    <Compile Include="EventSourcing\IStreamEvent.cs" />
-    <Compile Include="EventSourcing\IStreamEventsPage.cs" />
+    <Compile Include="EventSourcing\StreamEvent.cs" />
+    <Compile Include="EventSourcing\StreamEventsPage.cs" />
     <Compile Include="EventSourcing\NewSteamEvent.cs" />
     <Compile Include="EventSourcing\PageReadStatus.cs" />
     <Compile Include="EventSourcing\ReadDirection.cs" />

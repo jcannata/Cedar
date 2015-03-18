@@ -2,7 +2,6 @@
 {
     using System;
     using System.Collections.Generic;
-    using System.Collections.ObjectModel;
     using System.Linq;
     using System.Threading.Tasks;
     using Cedar.EventSourcing;
@@ -48,10 +47,10 @@
             var sequence = 0;
             var eventsToInsert = events.Select(e => new Event
             {
-                Body = e.Body,
+                Body = e.Body.ToArray(),
                 BucketId = "default",
                 EventId = e.EventId,
-                Headers = null,
+                Metadata = e.Metadata,
                 IsDeleted = false,
                 OriginalStreamId = streamId,
                 SequenceNumber = sequence++,
@@ -73,32 +72,28 @@
             throw new System.NotImplementedException();
         }
 
-        public Task<IAllEventsPage> ReadAll(string checkpoint, int maxCount, ReadDirection direction = ReadDirection.Forward)
+        public Task<AllEventsPage> ReadAll(string checkpoint, int maxCount, ReadDirection direction = ReadDirection.Forward)
         {
             throw new System.NotImplementedException();
         }
 
-        public Task<IStreamEventsPage> ReadStream(string streamId, int start, int count, ReadDirection direction = ReadDirection.Forward)
+        /// <summary>
+        /// Reads the stream.
+        /// </summary>
+        /// <param name="streamId">The stream identifier.</param>
+        /// <param name="start">The start.</param>
+        /// <param name="count">The count.</param>
+        /// <param name="direction">The direction.</param>
+        /// <returns></returns>
+        public Task<StreamEventsPage> ReadStream(
+            string streamId,
+            int start,
+            int count,
+            ReadDirection direction = ReadDirection.Forward)
         {
-            var connection = _getConnection();
-
-            Event[] results = connection.Table<Event>().Where(e => e.BucketId == "default" && e.StreamId == streamId)
-                .OrderBy(e => e.SequenceNumber)
-                .Skip(start)
-                .Take(count)
-                .ToArray();
-
-            IStreamEventsPage streamEventsPage = new StreamEventsPage(
-                streamId,
-                PageReadStatus.Success,
-                direction,
-                results[0].SequenceNumber,
-                results[results.Length - 1].SequenceNumber,
-                results[results.Length - 1].SequenceNumber + 1,
-                true,
-                results);
-
-            return Task.FromResult(streamEventsPage);
+            return direction == ReadDirection.Forward
+                ? ReadSteamForwards(streamId, start, count)
+                : ReadSteamBackwards(streamId, start, count);
         }
 
         public void Initialize()
@@ -117,6 +112,76 @@
 
         public void Dispose()
         {}
+
+        private Task<StreamEventsPage> ReadSteamForwards(string streamId, int start, int count)
+        {
+            var connection = _getConnection();
+
+            StreamEvent[] results = connection.Table<Event>()
+                .Where(e => e.BucketId == "default" && e.StreamId == streamId)
+                .OrderBy(e => e.SequenceNumber)
+                .Skip(start)
+                .Take(count)
+                // Must enumerate the results before selecting a StreamEvent else activation
+                // exception from Sqlite.Net trying create a StreamEvent. Comment out the 
+                // line below if you want to see the test(s) fail.
+                .ToArray()
+                .Select(e =>
+                    new StreamEvent(streamId,
+                        e.EventId,
+                        e.SequenceNumber,
+                        e.Checkpoint.ToString(),
+                        e.Body,
+                        e.Metadata))
+                .ToArray();
+
+            StreamEventsPage streamEventsPage = new StreamEventsPage(
+                streamId: streamId,
+                status: PageReadStatus.Success,
+                fromSequenceNumber: start,
+                lastSequenceNumber: results[results.Length - 1].SequenceNumber,
+                nextSequenceNumber: results[results.Length - 1].SequenceNumber + 1,
+                direction: ReadDirection.Forward,
+                isEndOfStream: true, //TODO
+                events: results);
+
+            return Task.FromResult(streamEventsPage);
+        }
+
+        private Task<StreamEventsPage> ReadSteamBackwards(string streamId, int start, int count)
+        {
+            var connection = _getConnection();
+
+            StreamEvent[] results = connection.Table<Event>()
+                .Where(e => e.BucketId == "default" && e.StreamId == streamId)
+                .OrderByDescending(e => e.SequenceNumber)
+                .Skip(start)
+                .Take(count)
+                // Must enumerate the results before selecting a StreamEvent else activation
+                // exception from Sqlite.Net trying create a StreamEvent. Comment out the 
+                // line below if you want to see the test(s) fail.
+                .ToArray()
+                .Select(e =>
+                    new StreamEvent(streamId,
+                        e.EventId,
+                        e.SequenceNumber,
+                        e.Checkpoint.ToString(),
+                        e.Body,
+                        e.Metadata))
+                .ToArray();
+
+            StreamEventsPage streamEventsPage = new StreamEventsPage(
+                streamId: streamId,
+                status: PageReadStatus.Success,
+                fromSequenceNumber: start,
+                lastSequenceNumber: results[0].SequenceNumber,
+                nextSequenceNumber: results[0].SequenceNumber - 1,
+                direction: ReadDirection.Backward,
+                isEndOfStream: true, //TODO
+                events: results);
+
+            return Task.FromResult(streamEventsPage);
+        }
 
         [Table("Events")]
         private class Event
@@ -144,13 +209,13 @@
             [NotNull]
             public DateTimeOffset Stamp { get; set; }
 
-            public byte[] Headers { get; set; }
+            public byte[] Metadata { get; set; }
 
             [NotNull]
             public byte[] Body { get; set; }
         }
 
-        private class StreamEventsPage : IStreamEventsPage
+        /*private class StreamEventsPage : IStreamEventsPage
         {
             private readonly int _fromSequenceNumber;
             private readonly bool _isEndOfStream;
@@ -231,7 +296,7 @@
             {
                 private readonly byte[] _body;
                 private readonly Guid _eventId;
-                private readonly IReadOnlyDictionary<string, string> _headers;
+                private readonly byte[] _headers;
                 private readonly int _sequenceNumber;
                 private readonly string _streamId;
 
@@ -241,9 +306,10 @@
                     _body = @event.Body;
                     _sequenceNumber = @event.SequenceNumber;
                     _streamId = @event.StreamId;
+                    _headers = @event.Headers;
                 }
 
-                public byte[] Body
+                public IReadOnlyCollection<byte> Body
                 {
                     get { return _body; }
                 }
@@ -253,7 +319,7 @@
                     get { return _eventId; }
                 }
 
-                public IReadOnlyDictionary<string, string> Headers
+                public IReadOnlyCollection<byte> Headers
                 {
                     get { return _headers; }
                 }
@@ -268,6 +334,6 @@
                     get { return _streamId; }
                 }
             }
-        }
+        }*/
     }
 }

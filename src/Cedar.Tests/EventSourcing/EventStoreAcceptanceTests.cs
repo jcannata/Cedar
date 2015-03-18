@@ -1,7 +1,6 @@
 ﻿namespace Cedar.EventSourcing
 {
     using System;
-    using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
     using FluentAssertions;
@@ -22,11 +21,8 @@
                     var events = new[]
                     {
                         new NewSteamEvent(Guid.NewGuid(),
-                            new byte[0],
-                            new Dictionary<string, string>
-                            {
-                                { "name", "value" }
-                            }),
+                            new byte[] { 1, 2 },
+                            new byte[] { 3, 4 }),
                         new NewSteamEvent(Guid.NewGuid(), new byte[0])
                     };
 
@@ -44,12 +40,12 @@
                     streamEventsPage.Events.Count.Should().Be(2);
 
                     var first = streamEventsPage.Events.First();
-                    first.Body.Should().NotBeNull();
+                    first.Body.ShouldAllBeEquivalentTo(new byte[] { 1, 2 });
                     first.EventId.Should().Be(events[0].EventId);
+                    first.Metadata.Count.Should().Be(2);
+                    first.Metadata.ShouldAllBeEquivalentTo(new byte[] { 3, 4 });
                     first.SequenceNumber.Should().Be(0);
                     first.StreamId.Should().Be(streamId);
-                    first.Headers.Count.Should().Be(1);
-                    first.Headers["name"].Should().Be("value");
                 }
             }
         }
@@ -66,10 +62,7 @@
                     {
                         new NewSteamEvent(Guid.NewGuid(),
                             new byte[0],
-                            new Dictionary<string, string>
-                            {
-                                { "name", "value" }
-                            }),
+                            new byte[0]),
                         new NewSteamEvent(Guid.NewGuid(), new byte[0])
                     };
 
@@ -92,7 +85,7 @@
                     first.EventId.Should().Be(events[1].EventId);
                     first.SequenceNumber.Should().Be(1);
                     first.StreamId.Should().Be(streamId);
-                    first.Headers.Should().BeEmpty();
+                    first.Metadata.Should().BeEmpty();
                 }
             }
         }
@@ -109,10 +102,7 @@
                     {
                         new NewSteamEvent(Guid.NewGuid(),
                             new byte[0],
-                            new Dictionary<string, string>
-                            {
-                                { "name", "value" }
-                            }),
+                            new byte[0]),
                         new NewSteamEvent(Guid.NewGuid(), new byte[0])
                     };
 

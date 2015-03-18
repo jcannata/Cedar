@@ -2,6 +2,7 @@
 {
     using System;
     using System.Threading.Tasks;
+    using FluentAssertions;
     using Xunit;
 
     public class ValueObjectTests
@@ -14,7 +15,7 @@
                 .When(date => date.AddDays(1))
                 .ThenShouldEqual(new DateTime(2000, 1, 2));
 
-            Assert.True(result.Passed);
+            result.Passed.Should().BeTrue();
         }
 
         [Fact]
@@ -25,7 +26,7 @@
                 .When(date => date.AddDays(1).Ticks)
                 .ThenShouldEqual(new DateTime(2000, 1, 2).Ticks);
 
-            Assert.True(result.Passed);
+            result.Passed.Should().BeTrue();
         }
 
 
@@ -37,7 +38,7 @@
                 .When(date => date.AddDays(1))
                 .ThenShouldEqual(new DateTime(2000, 1, 3));
 
-            Assert.False(result.Passed);
+            result.Passed.Should().BeFalse();
         }
 
         [Fact]
@@ -48,8 +49,8 @@
                 .When(date => date.AddYears(Int32.MinValue))
                 .ThenShouldEqual(new DateTime(2000, 1, 3));
 
-            Assert.False(result.Passed);
-            Assert.IsType<ScenarioException>(result.Results);
+            result.Passed.Should().BeFalse();
+            result.Results.Should().BeOfType<ScenarioException>();
         }
 
         [Fact]
@@ -60,7 +61,8 @@
                 .When(date => date.AddYears(Int32.MinValue))
                 .ThenShouldThrow<ArgumentOutOfRangeException>();
 
-            Assert.True(result.Passed);
+            result.Passed.Should().BeTrue();
+            result.Results.Should().BeOfType<ArgumentOutOfRangeException>();
         }
 
         [Fact]
@@ -71,8 +73,8 @@
                 .When(date => date.AddYears(Int32.MinValue))
                 .ThenShouldThrow<ArgumentOutOfRangeException>();
 
-            Assert.True(result.Passed);
-            Assert.IsType<ArgumentOutOfRangeException>(result.Results);
+            result.Passed.Should().BeTrue();
+            result.Results.Should().BeOfType<ArgumentOutOfRangeException>();
         }
 
         [Fact]
@@ -82,8 +84,8 @@
                 .Given(() => new DateTime(Int32.MaxValue, 1, 1))
                 .ThenShouldThrow<ArgumentOutOfRangeException>();
 
-            Assert.True(result.Passed);
-            Assert.IsType<ArgumentOutOfRangeException>(result.Results);
+            result.Passed.Should().BeTrue();
+            result.Results.Should().BeOfType<ArgumentOutOfRangeException>();
         }
 
         [Fact]
@@ -93,7 +95,7 @@
                 .Given(() => new DateTime(2000, 1, 1))
                 .ThenShouldEqual(new DateTime(2000, 1, 1));
 
-            Assert.True(result.Passed);
+            result.Passed.Should().BeTrue();
         }
 
     }

@@ -2,6 +2,7 @@
 {
     using System;
     using Cedar.Testing;
+    using FluentAssertions;
     using Xunit;
 
     public class MessageEqualityComparerTests
@@ -9,7 +10,7 @@
         [Fact]
         public void compare_complex_messages()
         {
-            Assert.True(MessageEqualityComparer.Instance.Equals(
+            MessageEqualityComparer.Instance.Equals(
                 new TestMessage
                 {
                     AGuid = Guid.Empty,
@@ -46,13 +47,13 @@
                             Value = "AnotherValue"
                         }
                     }
-                }));
+                }).Should().BeTrue();
         }
 
         [Fact]
         public void compare_differencing_complex_messages()
         {
-            Assert.False(MessageEqualityComparer.Instance.Equals(
+            MessageEqualityComparer.Instance.Equals(
                 new TestMessage
                 {
                     AGuid = Guid.Empty,
@@ -85,16 +86,21 @@
                             Value = "AnotherValue"
                         }
                     }
-                }));
+                }).Should().BeFalse();
         }
 
         private class TestMessage
         {
             public DateTime Date { get; set; }
+
             public DateTime Date2 { get; set; }
+
             public string Value { get; set; }
+
             public Guid AGuid { get; set; }
+
             public Guid AGuid2 { get; set; }
+
             public TestMessageItem[] Items { get; set; }
         }
 

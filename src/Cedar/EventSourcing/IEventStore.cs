@@ -12,8 +12,8 @@
 
         Task DeleteStream(string streamId, int expectedVersion = ExpectedVersion.Any, bool hardDelete = true);
 
-        Task<IAllEventsPage> ReadAll(string checkpoint, int maxCount, ReadDirection direction = ReadDirection.Forward);
+        Task<AllEventsPage> ReadAll(string checkpoint, int maxCount, ReadDirection direction = ReadDirection.Forward);
 
-        Task<IStreamEventsPage> ReadStream(string streamId, int start, int count, ReadDirection direction = ReadDirection.Forward);
+        Task<StreamEventsPage> ReadStream(string streamId, int start, int count, ReadDirection direction = ReadDirection.Forward);
     }
 }
