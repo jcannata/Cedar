@@ -51,7 +51,7 @@
 
             result.Print(new ConsolePrinter()).Wait();
 
-            result.Passed.Should().BeTrue();
+            result.Passed.Should().BeFalse();
         }
 
         [Fact]

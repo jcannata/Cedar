@@ -61,8 +61,8 @@
                 .When(date => date.AddYears(Int32.MinValue))
                 .ThenShouldThrow<ArgumentOutOfRangeException>();
 
-            result.Passed.Should().BeFalse();
             result.Passed.Should().BeTrue();
+            result.Results.Should().BeOfType<ArgumentOutOfRangeException>();
         }
 
         [Fact]
