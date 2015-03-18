@@ -8,6 +8,7 @@
     using System.Net.Http;
     using System.Threading.Tasks;
     using Cedar.Testing.Printing.Console;
+    using FluentAssertions;
     using Microsoft.Owin;
     using Xunit;
     using MidFunc = System.Func<System.Func<System.Collections.Generic.IDictionary<string, object>,
@@ -33,7 +34,7 @@
 
             result.Print(new ConsolePrinter()).Wait();
 
-            Assert.True(result.Passed);
+            result.Passed.Should().BeTrue();
         }
 
         [Fact]
@@ -50,7 +51,7 @@
 
             result.Print(new ConsolePrinter()).Wait();
 
-            Assert.False(result.Passed);
+            result.Passed.Should().BeTrue();
         }
 
         [Fact]
@@ -73,7 +74,7 @@
                 }, response => response.StatusCode != HttpStatusCode.NotModified)
                 .ThenShould(response => response.StatusCode == HttpStatusCode.OK);
 
-            Assert.True(result.Passed);
+            result.Passed.Should().BeTrue();
         }
 
         [Fact]
@@ -96,8 +97,8 @@
                 }, response => response.StatusCode != HttpStatusCode.NotModified, TimeSpan.FromMilliseconds(10))
                 .ThenShould(response => response.StatusCode == HttpStatusCode.OK);
 
-            Assert.False(result.Passed);
-            Assert.IsType<ScenarioException>(result.Results);
+            result.Passed.Should().BeFalse();
+            result.Results.Should().BeOfType<ScenarioException>();
         }
 
         private static MidFunc Middleware

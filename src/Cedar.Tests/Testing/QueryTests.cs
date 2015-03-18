@@ -5,6 +5,7 @@
     using System.Text;
     using System.Threading.Tasks;
     using Cedar.Handlers;
+    using FluentAssertions;
     using Microsoft.Owin;
     using Xunit;
     using MidFunc = System.Func<System.Func<System.Collections.Generic.IDictionary<string, object>,
@@ -33,7 +34,7 @@
                 .When(new HttpRequestMessage(HttpMethod.Get, "/query-response"))
                 .ThenShould(response => response.Headers.ContentType.MediaType == "application/json");
 
-            Assert.True(result.Passed);
+            result.Passed.Should().BeTrue();
         }
 
         [Fact]
@@ -44,7 +45,7 @@
                 .When(new HttpRequestMessage(HttpMethod.Get, "/query-response"))
                 .ThenShould(response => response.Headers.ContentType.MediaType != "application/json");
 
-            Assert.False(result.Passed);
+            result.Passed.Should().BeFalse();
         }
         
         private class SomeModule : HandlerModule
