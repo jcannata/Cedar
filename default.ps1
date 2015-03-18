@@ -8,7 +8,7 @@ properties {
     $srcDir = "$rootDir\src"
     $solutionFilePath = "$srcDir\$projectName.sln"
     $assemblyInfoFilePath = "$srcDir\SharedAssemblyInfo.cs"
-    $ilmerge_path = "$srcDir\packages\ILMerge.2.14.1208\tools\ilmerge.exe"
+    $ilmergePath = "$srcDir\packages\ILMerge.2.14.1208\tools\ilmerge.exe"
 }
 
 task default -depends Clean, UpdateVersion, RunTests, CreateNuGetPackages
@@ -30,11 +30,11 @@ task Compile {
 }
 
 task RunTests -depends Compile {
-    $xunitRunner = "$srcDir\packages\xunit.runners.1.9.2\tools\xunit.console.clr4.exe"
+    $xunitRunner = "$srcDir\packages\xunit.runner.console.2.0.0\tools\xunit.console.exe"
     $reportDir = "$reportsDir\tests\"
     EnsureDirectory $reportDir
 
-    .$xunitRunner "$srcDir\Cedar.Tests\bin\Release\Cedar.Tests.dll" /html "$reportDir\index.html" /xml "$reportDir\tests.xml"
+    .$xunitRunner "$srcDir\Cedar.Tests\bin\Release\Cedar.Tests.dll" -html "$reportDir\index.html" -xml "$reportDir\tests.xml"
 	
 	# Pretty-print the xml
 	[Reflection.Assembly]::LoadWithPartialName("System.Xml.Linq")
@@ -51,7 +51,7 @@ task ILMerge -depends Compile {
         "System.Reactive.Interfaces",
         "System.Reactive.Linq",
         "System.Reactive.PlatformServices") |% { $inputDlls = "$inputDlls $dllDir\$_.dll" }
-    Invoke-Expression "$ilmerge_path /targetplatform:v4 /internalize /allowDup /target:library /log /out:$mergedDir\Cedar.dll $inputDlls"
+    Invoke-Expression "$ilmergePath /targetplatform:v4 /internalize /allowDup /target:library /log /out:$mergedDir\Cedar.dll $inputDlls"
 
     $dllDir = "$srcDir\Cedar.NEventStore\bin\Release"
     $inputDlls = "$dllDir\Cedar.NEventStore.dll"
@@ -60,7 +60,7 @@ task ILMerge -depends Compile {
         "System.Reactive.Interfaces",
         "System.Reactive.Linq",`
         "System.Reactive.PlatformServices") |% { $inputDlls = "$inputDlls $dllDir\$_.dll" }
-    Invoke-Expression "$ilmerge_path /targetplatform:v4 /internalize /allowDup /target:library /log /out:$mergedDir\Cedar.NEventStore.dll $inputDlls"
+    Invoke-Expression "$ilmergePath /targetplatform:v4 /internalize /allowDup /target:library /log /out:$mergedDir\Cedar.NEventStore.dll $inputDlls"
 
     $dllDir = "$srcDir\Cedar.GetEventStore\bin\Release"
     $inputDlls = "$dllDir\Cedar.GetEventStore.dll"
@@ -70,7 +70,7 @@ task ILMerge -depends Compile {
         "System.Reactive.Interfaces",
         "System.Reactive.Linq",`
         "System.Reactive.PlatformServices") |% { $inputDlls = "$inputDlls $dllDir\$_.dll" }
-    Invoke-Expression "$ilmerge_path /targetplatform:v4 /internalize /allowDup /target:library /log /out:$mergedDir\Cedar.GetEventStore.dll $inputDlls"
+    Invoke-Expression "$ilmergePath /targetplatform:v4 /internalize /allowDup /target:library /log /out:$mergedDir\Cedar.GetEventStore.dll $inputDlls"
 
     $dllDir = "$srcDir\Cedar.Testing\bin\Release"
     $inputDlls = "$dllDir\Cedar.Testing.dll "
@@ -81,12 +81,12 @@ task ILMerge -depends Compile {
         "System.Reactive.Linq",`
         "KellermanSoftware.Compare-NET-Objects",
         "System.Reactive.PlatformServices") |% { $inputDlls = "$inputDlls $dllDir\$_.dll" }
-    Invoke-Expression "$ilmerge_path /targetplatform:v4 /internalize /allowDup /target:library /log /out:$mergedDir\Cedar.Testing.dll $inputDlls"
+    Invoke-Expression "$ilmergePath /targetplatform:v4 /internalize /allowDup /target:library /log /out:$mergedDir\Cedar.Testing.dll $inputDlls"
 
     $dllDir = "$srcDir\Cedar.Testing.TestRunner\bin\Release"
     $inputDlls = "$dllDir\Cedar.Testing.TestRunner.exe "
     @("PowerArgs") |% { $inputDlls = "$inputDlls $dllDir\$_.dll" }
-    Invoke-Expression "$ilmerge_path /targetplatform:v4 /internalize /allowDup /target:exe /log /out:$mergedDir\Cedar.Testing.TestRunner.exe $inputDlls"
+    Invoke-Expression "$ilmergePath /targetplatform:v4 /internalize /allowDup /target:exe /log /out:$mergedDir\Cedar.Testing.TestRunner.exe $inputDlls"
 }
 
 task CreateNuGetPackages -depends ILMerge {
