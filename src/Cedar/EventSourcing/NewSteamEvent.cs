@@ -2,7 +2,7 @@
 {
     using System;
 
-    public class NewSteamEvent
+    public sealed class NewSteamEvent
     {
         public readonly Guid EventId;
         public readonly byte[] Body;

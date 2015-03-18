@@ -35,8 +35,9 @@
     <Reference Include="Inflector">
       <HintPath>..\packages\Inflector.1.0.0.0\lib\net45\Inflector.dll</HintPath>
     </Reference>
-    <Reference Include="KellermanSoftware.Compare-NET-Objects">
-      <HintPath>..\packages\CompareNETObjects.3.01.0.0\lib\net45\KellermanSoftware.Compare-NET-Objects.dll</HintPath>
+    <Reference Include="KellermanSoftware.Compare-NET-Objects, Version=3.2.0.0, Culture=neutral, PublicKeyToken=d970ace04cc85217, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\CompareNETObjects.3.02.0.0\lib\net45\KellermanSoftware.Compare-NET-Objects.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Owin">
       <HintPath>..\packages\Microsoft.Owin.3.0.0\lib\net45\Microsoft.Owin.dll</HintPath>

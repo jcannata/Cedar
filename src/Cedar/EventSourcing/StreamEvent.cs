@@ -3,7 +3,7 @@
     using System;
     using System.Collections.Generic;
 
-    public class StreamEvent
+    public sealed class StreamEvent
     {
         public readonly Guid EventId;
         public readonly string StreamId;
@@ -12,7 +12,13 @@
         public readonly IReadOnlyCollection<byte> Body;
         public readonly IReadOnlyCollection<byte> Metadata;
 
-        public StreamEvent(string streamId, Guid eventId, int sequenceNumber, string checkpoint, byte[] body, byte[] metadata)
+        public StreamEvent(
+            string streamId,
+            Guid eventId,
+            int sequenceNumber,
+            string checkpoint,
+            IReadOnlyCollection<byte> body,
+            IReadOnlyCollection<byte> metadata)
         {
             EventId = eventId;
             StreamId = streamId;
